@@ -3,30 +3,15 @@ import express from "express";
 import path from "path";
 const app = express();
 require("./db/mongoose");
-const User = require("./models/user");
+const router = express.Router();
+const userRoutes = require("./routes/UserAPI/user");
+const staticFiles = express.static(path.join(__dirname, "../../client/build"));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
-const router = express.Router();
-const staticFiles = express.static(path.join(__dirname, "../../client/build"));
 app.use(staticFiles);
-
-router.post("/user", (req, res) => {
-  const user = new User(req.body);
-
-  user
-    .save()
-    .then(() => {
-      res.send(user);
-    })
-    .catch(e => {
-      res.status(400).send(e);
-    });
-});
-
 app.use(router);
-
+app.use(userRoutes);
 // any routes not picked up by the server api will be handled by the react router
 app.use("/*", staticFiles);
 
