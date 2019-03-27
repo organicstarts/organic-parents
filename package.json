@@ -1,0 +1,18 @@
+{
+  "name": "organic-parents",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "serverinstall": "(cd client && npm install) && (cd server && npm install)",
+    "localinstall": "(cd client && npm install) && (cd ../server && npm install)",
+    "start": "concurrently \"cd client && npm start\" \"cd server && npm start\"",
+    "build": "concurrently \"cd client && npm run build\" \"cd server && npm run build\"",
+    "start:prod": "cd server && npm run start:prod"
+  },
+  "author": "yvan pangilinan",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^4.1.0"
+  }
+}
