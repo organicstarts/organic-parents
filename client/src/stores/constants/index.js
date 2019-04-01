@@ -1,0 +1,4 @@
+export const AUTH_LOGIN = "AUTH_LOGIN";
+export const AUTH_LOGIN_LOADED = "AUTH_LOGIN_LOADED";
+export const AUTH_SIGNUP = "AUTH_SIGNUP";
+export const AUTH_SIGNUP_LOADED = "AUTH_SIGNUP_LOADED";
