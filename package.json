@@ -13,7 +13,6 @@
   "author": "yvan pangilinan",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^4.1.0",
-    "validator": "^10.11.0"
+    "concurrently": "^4.1.0"
   }
 }
