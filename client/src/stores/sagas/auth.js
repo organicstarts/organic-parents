@@ -1,6 +1,10 @@
 import { call, put } from "redux-saga/effects";
 import axios from "axios";
-import { AUTH_LOGIN_LOADED, AUTH_SIGNUP_LOADED } from "../constants";
+import {
+  AUTH_LOGIN_LOADED,
+  AUTH_SIGNUP_LOADED,
+  AUTH_LOGOUT_LOADED
+} from "../constants";
 
 function* handleLogin(action) {
   try {
@@ -18,6 +22,14 @@ function* handleSignUp(action) {
     yield put({ type: "API_ERRORED", payload: e });
   }
 }
+function* handleLogout(action) {
+  try {
+    const payload = yield call(logout, action.payload);
+    yield put({ type: AUTH_LOGOUT_LOADED, payload });
+  } catch (e) {
+    yield put({ type: "API_ERRORED", payload: e });
+  }
+}
 
 const login = async payload => {
   const { email, password } = payload;
@@ -28,6 +40,13 @@ const login = async payload => {
     })
     .then(response => response.data)
     .catch(e => console.log(e));
+};
+
+const logout = async payload => {
+  return await axios
+    .post("users/logout", {}, { headers: { Authorization: payload } })
+    .then(e => e.response)
+    .catch(e => e);
 };
 
 const signUp = async payload => {
@@ -43,4 +62,4 @@ const signUp = async payload => {
     .catch(e => e.response.data);
 };
 
-export { handleLogin, handleSignUp };
+export { handleLogin, handleSignUp, handleLogout };

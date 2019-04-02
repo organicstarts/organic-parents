@@ -2,7 +2,8 @@ import {
   AUTH_LOGIN,
   AUTH_SIGNUP,
   AUTH_LOGIN_LOADED,
-  AUTH_SIGNUP_LOADED
+  AUTH_SIGNUP_LOADED,
+  AUTH_LOGOUT_LOADED
 } from "../constants";
 
 const INITIAL_STATE = {
@@ -48,6 +49,9 @@ function authReducer(state = INITIAL_STATE, action) {
     }
     case AUTH_SIGNUP_LOADED: {
       return setUser(state, action);
+    }
+    case AUTH_LOGOUT_LOADED: {
+      return { ...INITIAL_STATE };
     }
 
     case "API_ERRORED": {

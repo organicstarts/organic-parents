@@ -1,4 +1,4 @@
-import { AUTH_LOGIN, AUTH_SIGNUP } from "../constants";
+import { AUTH_LOGIN, AUTH_SIGNUP, AUTH_LOGOUT } from "../constants";
 
 const login = state => ({
   type: AUTH_LOGIN,
@@ -9,4 +9,9 @@ const signUp = state => ({
   payload: state
 });
 
-export { login, signUp };
+const logout = state => ({
+  type: AUTH_LOGOUT,
+  payload: state
+});
+
+export { login, signUp, logout };
