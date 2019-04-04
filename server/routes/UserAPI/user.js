@@ -84,7 +84,7 @@ router.get("/users/:id", auth, async (req, res) => {
 ---------------------------------------------------------------------*/
 router.patch("/users/me", auth, async (req, res) => {
   const updates = Object.keys(req.body);
-  const allowedUpdates = ["name", "email", "password", "age"];
+  const allowedUpdates = ['firstName', 'lastName', "email", "password", "age"];
   const isValidOperation = updates.every(update =>
     allowedUpdates.includes(update)
   );
@@ -96,13 +96,11 @@ router.patch("/users/me", auth, async (req, res) => {
   try {
     updates.forEach(update => (req.user[update] = req.body[update]));
     await req.user.save();
-
     res.send(req.user);
   } catch (e) {
     res.status(400).send(e);
   }
 });
-
 /*-------------------------------------------------------------------
                             DELETE REQUEST                            
 ---------------------------------------------------------------------*/
@@ -150,7 +148,7 @@ router.post(
     res.send();
   },
   (error, req, res, next) => {
-    console.log("AFSADSAD")
+    console.log("AFSADSAD");
     res.status(400).send({ error: error.message });
   }
 );
