@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import {
   Segment,
   Grid,
@@ -48,9 +48,9 @@ class Main extends Component {
   renderCategories() {
     return this.state.categories.map(data => {
       return (
-        <Table.Row key={data.forum} verticalAlign="middle">
+        <Table.Row className="hover"key={data.forum} verticalAlign="middle">
           <Table.Cell style={styles.margin}>
-            <Header>{data.forum}</Header>
+            <Header as={Link} to="/profile">{data.forum}</Header>
           </Table.Cell>
           <Table.Cell style={styles.margin}>
             <Header>{data.topics}</Header>
@@ -68,7 +68,7 @@ class Main extends Component {
   render() {
     return (
       <Container>
-        <Header as="h1">Forums</Header>
+        <Header as="h1" style={{marginBottom: "55px"}}>Forums</Header>
         <Table padded="very" size="large">
           <Table.Header>
             <Table.Row>

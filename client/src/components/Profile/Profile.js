@@ -12,6 +12,7 @@ import {
   Table,
   Icon
 } from "semantic-ui-react";
+import { uploadPhoto } from "../../stores/actions/user";
 import blankImg from "../../images/image.png";
 
 class Profile extends Component {
@@ -39,6 +40,14 @@ class Profile extends Component {
     return this.state.password !== this.state.rePassword;
   }
 
+  fileHandler = e => {
+    const fileInfo = {
+      avatar: e.target.files[0],
+      token: this.props.token
+    };
+    this.props.uploadPhoto(fileInfo);
+  };
+
   render() {
     const { enableEdit } = this.state;
     return (
@@ -47,13 +56,35 @@ class Profile extends Component {
           <Grid.Row divided columns={"equal"}>
             <Grid.Column>
               <Segment>
-                <Image style={{ marginBottom: "15px" }} src={blankImg} />
+                <Image
+                  circular
+                  style={{ margin: "15px auto" }}
+                  src={`http://localhost:3001/users/${this.props.id}/avatar`}
+                  onError={e => {
+                    e.target.onerror = null;
+                    e.target.src = blankImg;
+                  }}
+                />
                 <Header as="h2" floated="left">
                   My Profile{" "}
                 </Header>
-                <Button circular floated="right">
+                <Button
+                  circular
+                  floated="right"
+                  onClick={() => {
+                    document.getElementById("getFile").click();
+                  }}
+                >
                   Add Photo
                 </Button>
+                <input
+                  id="getFile"
+                  style={{ display: "none" }}
+                  type="file"
+                  accept="image/*"
+                  capture="camera"
+                  onChange={this.fileHandler}
+                />
                 <Button circular toggle icon="edit" onClick={this.enableEdit} />{" "}
                 <Header as="h4">{this.props.email}</Header>
                 <Form>
@@ -198,16 +229,18 @@ class Profile extends Component {
   }
 }
 
-function mapStateToProps({ authState }) {
+function mapStateToProps({ authState, userState }) {
   return {
-    email: authState.email,
-    firstName: authState.firstName,
-    lastName: authState.lastName
+    email: userState.email,
+    firstName: userState.firstName,
+    lastName: userState.lastName,
+    id: userState._id,
+    token: authState.token
   };
 }
 export default withRouter(
   connect(
     mapStateToProps,
-    null
+    { uploadPhoto }
   )(Profile)
 );

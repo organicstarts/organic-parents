@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const taskSchema = new mongoose.Schema(
+const postSchema = new mongoose.Schema(
   {
     description: {
       type: String,
@@ -22,6 +22,6 @@ const taskSchema = new mongoose.Schema(
   }
 );
 
-const Task = mongoose.model("Task", taskSchema);
+const Post = mongoose.model("Post", postSchema);
 
-module.exports = Task;
+module.exports = Post;

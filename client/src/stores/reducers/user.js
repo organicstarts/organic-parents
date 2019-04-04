@@ -1,44 +1,30 @@
 import {
-  AUTH_LOGIN,
-  AUTH_SIGNUP,
   AUTH_LOGIN_LOADED,
   AUTH_SIGNUP_LOADED,
   AUTH_LOGOUT_LOADED
 } from "../constants";
 
 const INITIAL_STATE = {
-  loading: false,
-  token: "",
-  error: ""
-};
-
-const setLoading = (state, action) => {
-  return Object.assign({}, state, {
-    loading: true
-  });
+  firstName: "",
+  lastName: "",
+  email: "",
 };
 
 const setUser = (state, action) => {
   if (action.payload.errmsg) {
     return Object.assign({}, state, {
-      error: "Email already exist! please input another email address."
+      error: ""
     });
   }
 
-  return Object.assign({}, state, {
-    token: action.payload.token,
-    loading: false
-  });
+  let userInfo = {};
+  const keys = Object.keys(action.payload.user);
+  keys.forEach(key => (userInfo[key] = action.payload.user[key]));
+  return Object.assign({}, state, userInfo);
 };
 
-function authReducer(state = INITIAL_STATE, action) {
+function userReducer(state = INITIAL_STATE, action) {
   switch (action.type) {
-    case AUTH_LOGIN: {
-      return setLoading(state, action);
-    }
-    case AUTH_SIGNUP: {
-      return setLoading(state, action);
-    }
     case AUTH_LOGIN_LOADED: {
       return setUser(state, action);
     }
@@ -48,7 +34,6 @@ function authReducer(state = INITIAL_STATE, action) {
     case AUTH_LOGOUT_LOADED: {
       return { ...INITIAL_STATE };
     }
-
     case "API_ERRORED": {
       return { ...INITIAL_STATE };
     }
@@ -57,4 +42,4 @@ function authReducer(state = INITIAL_STATE, action) {
   }
 }
 
-export default authReducer;
+export default userReducer;

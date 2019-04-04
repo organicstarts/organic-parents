@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const User = require("../../models/user");
+const multer = require("multer");
+const sharp = require("sharp");
 const auth = require("../../middleware/auth");
 
 /*-------------------------------------------------------------------
@@ -46,7 +48,7 @@ router.post("/users/logout", auth, async (req, res) => {
 router.post("/users/logoutAll", auth, async (req, res) => {
   try {
     req.user.tokens = [];
-    console.log(req.user)
+    console.log(req.user);
     await req.user.save();
     res.send();
   } catch (e) {
@@ -116,6 +118,62 @@ router.delete("/users/me", auth, async (req, res) => {
   } catch (e) {
     res.status(500).send();
   }
+});
+
+/*-------------------------------------------------------------------
+                            USER AVATAR                            
+---------------------------------------------------------------------*/
+const upload = multer({
+  limits: {
+    fileSize: 1000000
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      return cb(new Error("Please upload an image"));
+    }
+
+    cb(undefined, true);
+  }
+});
+
+router.post(
+  "/users/me/avatar",
+  auth,
+  upload.single("avatar"),
+  async (req, res) => {
+    const buffer = await sharp(req.file.buffer)
+      .resize({ width: "auto", height: 450 })
+      .png()
+      .toBuffer();
+    req.user.avatar = buffer;
+    await req.user.save();
+    res.send();
+  },
+  (error, req, res, next) => {
+    console.log("AFSADSAD")
+    res.status(400).send({ error: error.message });
+  }
+);
+
+router.get("/users/:id/avatar", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user || !user.avatar) {
+      throw new Error();
+    }
+
+    res.set("Content-Type", "image/png");
+    res.send(user.avatar);
+  } catch (e) {
+    res.status(404).send();
+  }
+});
+
+router.delete("/users/me/avatar", auth, async (req, res) => {
+  req.user.avatar = undefined;
+  await req.user.save();
+  res.send();
 });
 
 module.exports = router;
