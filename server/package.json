@@ -4,10 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -r babel-register server.js",
+    "start": "env-cmd ./config/dev.env nodemon -r babel-register server.js",
     "build": "babel . --ignore node_modules,build --out-dir build",
     "start:prod": "node build/server.js",
-    "test": "jest --watch"
+    "test": "env-cmd ./config/test.env jest --watch"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "_moduleAliases": {
     "@bgauth": "../client/src/config"
@@ -25,7 +28,6 @@
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
-    "jest": "^23.6.0",
     "jsonwebtoken": "^8.5.1",
     "module-alias": "^2.2.0",
     "mongodb": "^3.2.2",
@@ -34,9 +36,14 @@
     "node-fetch": "^2.3.0",
     "nodemailer": "^6.0.0",
     "nodemailer-smtp-transport": "^2.7.4",
-    "nodemon": "^1.18.10",
     "sharp": "^0.22.0",
     "uuid": "^3.3.2",
     "validator": "^10.11.0"
+  },
+  "devDependencies": {
+    "env-cmd": "^8.0.2",
+    "jest": "^23.6.0",
+    "nodemon": "^1.18.10",
+    "supertest": "^4.0.2"
   }
 }

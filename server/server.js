@@ -13,11 +13,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(staticFiles);
 app.use(router);
 app.use(userRoutes);
-app.use(postRoutes)
+app.use(postRoutes);
 // any routes not picked up by the server api will be handled by the react router
 app.use("/*", staticFiles);
 
-app.set("port", process.env.PORT || 3001);
-app.listen(app.get("port"), () => {
-  console.log(`Listening on ${app.get("port")}`);
-});
+module.exports = app;
