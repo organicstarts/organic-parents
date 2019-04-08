@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-const postSchema = new mongoose.Schema(
+const replySchema = new mongoose.Schema(
   {
-    description: {
+    content: {
       type: String,
       required: true,
       trim: true
@@ -15,6 +15,11 @@ const postSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User"
+    },
+    thread: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Thread"
     }
   },
   {
@@ -22,6 +27,6 @@ const postSchema = new mongoose.Schema(
   }
 );
 
-const Post = mongoose.model("Post", postSchema);
+const Reply = mongoose.model("Reply", replySchema);
 
-module.exports = Post;
+module.exports = Reply;

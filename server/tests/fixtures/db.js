@@ -1,7 +1,8 @@
-const mongoose = require('mongoose')
-const jwt = require('jsonwebtoken')
+const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 const User = require("../../models/user");
-const Post = require('../../models/post')
+const Reply = require("../../models/reply");
+const Thread = require("../../models/thread");
 
 const userOneId = new mongoose.Types.ObjectId();
 const userOne = {
@@ -17,56 +18,72 @@ const userOne = {
   ]
 };
 
-const userTwoId = new mongoose.Types.ObjectId()
+const userTwoId = new mongoose.Types.ObjectId();
 const userTwo = {
-    _id: userTwoId,
-    firstName: 'Jess',
-    lastName: 'Doe',
-    email: 'jess@example.com',
-    password: 'myhouse099@@',
-    tokens: [{
-        token: jwt.sign({ _id: userTwoId }, process.env.JWT_SECRET)
-    }]
-}
+  _id: userTwoId,
+  firstName: "Jess",
+  lastName: "Doe",
+  email: "jess@example.com",
+  password: "myhouse099@@",
+  tokens: [
+    {
+      token: jwt.sign({ _id: userTwoId }, process.env.JWT_SECRET)
+    }
+  ]
+};
 
-const postOne = {
-    _id: new mongoose.Types.ObjectId(),
-    description: 'First post',
-    completed: false,
-    owner: userOne._id
-}
+const threadOneId = new mongoose.Types.ObjectId();
+const threadOne = {
+  _id: threadOneId,
+  subject: "Hello World",
+  content: "yuppie",
+  owner: userOne._id
+};
 
-const postTwo = {
-    _id: new mongoose.Types.ObjectId(),
-    description: 'Second post',
-    completed: true,
-    owner: userOne._id
-}
+const replyOne = {
+  _id: new mongoose.Types.ObjectId(),
+  content: "First Reply",
+  completed: false,
+  owner: userOne._id,
+  thread: threadOne._id
+};
 
-const postThree = {
-    _id: new mongoose.Types.ObjectId(),
-    description: 'Third post',
-    completed: true,
-    owner: userTwo._id
-}
+const replyTwo = {
+  _id: new mongoose.Types.ObjectId(),
+  content: "Second Reply",
+  completed: true,
+  owner: userOne._id,
+  thread: threadOne._id
+};
+
+const replyThree = {
+  _id: new mongoose.Types.ObjectId(),
+  content: "Third Reply",
+  completed: true,
+  owner: userTwo._id,
+  thread: threadOne._id
+};
 
 const setupDatabase = async () => {
-    await User.deleteMany()
-    await Post.deleteMany()
-    await new User(userOne).save()
-    await new User(userTwo).save()
-    await new Post(postOne).save()
-    await new Post(postTwo).save()
-    await new Post(postThree).save()
-}
+  await User.deleteMany();
+  await Reply.deleteMany();
+  await Thread.deleteMany();
+  await new User(userOne).save();
+  await new User(userTwo).save();
+  await new Thread(threadOne).save();
+  await new Reply(replyOne).save();
+  await new Reply(replyTwo).save();
+  await new Reply(replyThree).save();
+};
 
 module.exports = {
-    userOneId,
-    userOne,
-    userTwoId,
-    userTwo,
-    postOne,
-    postTwo,
-    postThree,
-    setupDatabase
-}
+  userOneId,
+  userOne,
+  userTwoId,
+  userTwo,
+  threadOneId,
+  replyOne,
+  replyTwo,
+  replyThree,
+  setupDatabase
+};

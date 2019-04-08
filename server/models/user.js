@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const Post = require("./post");
+const Reply = require("./reply");
 
 const userSchema = new mongoose.Schema(
   {
@@ -65,8 +65,8 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.virtual("posts", {
-  ref: "Post",
+userSchema.virtual("replies", {
+  ref: "Reply",
   localField: "_id",
   foreignField: "owner"
 });
@@ -78,7 +78,7 @@ userSchema.methods.toJSON = function() {
   delete userObject.password;
   delete userObject.tokens;
   delete userObject.avatar;
-  
+
   return userObject;
 };
 
@@ -122,7 +122,7 @@ userSchema.pre("save", async function(next) {
 // Delete user posts when user is removed
 userSchema.pre("remove", async function(next) {
   const user = this;
-  await Post.deleteMany({ owner: user._id });
+  await Reply.deleteMany({ owner: user._id });
   next();
 });
 

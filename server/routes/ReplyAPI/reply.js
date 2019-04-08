@@ -1,19 +1,19 @@
 const router = require("express").Router();
-const Post = require("../../models/post");
+const Reply = require("../../models/reply");
 const auth = require("../../middleware/auth");
 
 /*-------------------------------------------------------------------
                             POST REQUEST                            
 ---------------------------------------------------------------------*/
-router.post("/posts", auth, async (req, res) => {
-  const post = new Post({
+router.post("/reply", auth, async (req, res) => {
+  const reply = new Reply({
     ...req.body,
     owner: req.user._id
   });
 
   try {
-    await post.save();
-    res.status(201).send(post);
+    await reply.save();
+    res.status(201).send(reply);
   } catch (e) {
     res.status(400).send(e);
   }
@@ -22,7 +22,7 @@ router.post("/posts", auth, async (req, res) => {
 /*-------------------------------------------------------------------
                             GET REQUEST                            
 ---------------------------------------------------------------------*/
-router.get("/posts", auth, async (req, res) => {
+router.get("/replies", auth, async (req, res) => {
   const match = {};
   const sort = {};
   if (req.query.completed) {
@@ -36,7 +36,7 @@ router.get("/posts", auth, async (req, res) => {
   try {
     await req.user
       .populate({
-        path: "posts",
+        path: "replies",
         match,
         options: {
           limit: parseInt(req.query.limit),
@@ -45,7 +45,7 @@ router.get("/posts", auth, async (req, res) => {
         }
       })
       .execPopulate();
-    res.send(req.user.posts);
+    res.send(req.user.replies);
   } catch (e) {
     res.status(500).send();
   }
@@ -72,7 +72,7 @@ router.get("/posts/:id", auth, async (req, res) => {
 ---------------------------------------------------------------------*/
 router.patch("/posts/:id", auth, async (req, res) => {
   const updates = Object.keys(req.body);
-  const allowedUpdates = ["description", "completed"];
+  const allowedUpdates = ["content", "completed"];
   const isValidOperation = updates.every(update =>
     allowedUpdates.includes(update)
   );
@@ -102,18 +102,18 @@ router.patch("/posts/:id", auth, async (req, res) => {
 /*-------------------------------------------------------------------
                             DELETE REQUEST                            
 ---------------------------------------------------------------------*/
-router.delete("/posts/:id", auth, async (req, res) => {
+router.delete("/replies/:id", auth, async (req, res) => {
   try {
-    const post = await Post.findOneAndDelete({
+    const reply = await Reply.findOneAndDelete({
       _id: req.params.id,
       owner: req.user._id
     });
 
-    if (!post) {
+    if (!reply) {
       res.status(404).send();
     }
 
-    res.send(post);
+    res.send(reply);
   } catch (e) {
     res.status(500).send();
   }
