@@ -6,6 +6,7 @@ require("./db/mongoose");
 const router = express.Router();
 const userRoutes = require("./routes/UserAPI/user");
 const replyRoutes = require("./routes/ReplyAPI/reply");
+const threadRoutes = require("./routes/threadAPI/thread");
 const staticFiles = express.static(path.join(__dirname, "../../client/build"));
 
 app.use(bodyParser.json());
@@ -14,6 +15,7 @@ app.use(staticFiles);
 app.use(router);
 app.use(userRoutes);
 app.use(replyRoutes);
+app.use(threadRoutes);
 // any routes not picked up by the server api will be handled by the react router
 app.use("/*", staticFiles);
 

@@ -1,5 +1,14 @@
 import React, { Component } from "react";
-import { Menu, Button, Container, Icon, Image, Header } from "semantic-ui-react";
+import {
+  Menu,
+  Button,
+  Container,
+  Icon,
+  Image,
+  Header,
+  Grid,
+  Segment
+} from "semantic-ui-react";
 import { withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { logout } from "./stores/actions/auth";
@@ -43,8 +52,32 @@ class App extends Component {
             />
           </Menu.Item>
         </Menu>
-        <Container fluid style={{ marginTop: "200px" }}>
-          <Router />
+        <Container>
+          <Grid style={{ marginTop: "200px" }}>
+            <Grid.Row columns={2}>
+              <Grid.Column width={10}>
+                <Router />
+              </Grid.Column>
+              <Grid.Column width={4}>
+                <Link to={"thread"}>new thread</Link>
+               <h4> Statistics</h4>
+                <Segment>
+                  <p>16 MEMBERS</p>
+                  <p>111 THREADs</p>
+                  <p>12 REPLIES</p>
+                </Segment>
+                <h4>Categories</h4>
+                <div>
+                  <p>Lorem Ipsum</p>
+                  <p>Lorem Ipsum</p>
+                  <p>Lorem Ipsum</p>
+                  <p>Lorem Ipsum</p>
+                  <p>Lorem Ipsum</p>
+                  <p>Lorem Ipsum</p>
+                </div>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
         </Container>
         <Menu
           fixed="bottom"
