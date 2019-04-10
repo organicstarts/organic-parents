@@ -148,7 +148,6 @@ router.post(
     res.send();
   },
   (error, req, res, next) => {
-    console.log("AFSADSAD");
     res.status(400).send({ error: error.message });
   }
 );

@@ -37,7 +37,8 @@ const threadOne = {
   _id: threadOneId,
   subject: "Hello World",
   content: "yuppie",
-  owner: userOne._id
+  owner: userOne._id,
+  ownerName: `${userOne.firstName} ${userOne.lastName}`
 };
 
 const replyOne = {

@@ -12,6 +12,11 @@ const threadSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
+    ownerName: {
+      type: String,
+      required: true,
+      trim: true
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -22,6 +27,11 @@ const threadSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+threadSchema.virtual("replies", {
+  ref: "Reply",
+  localField: "_id",
+  foreignField: "thread"
+});
 
 const Thread = mongoose.model("Thread", threadSchema);
 

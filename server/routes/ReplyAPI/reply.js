@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Reply = require("../../models/reply");
+const Thread = require("../../models/thread");
 const auth = require("../../middleware/auth");
 
 /*-------------------------------------------------------------------
@@ -46,6 +47,38 @@ router.get("/replies", auth, async (req, res) => {
       })
       .execPopulate();
     res.send(req.user.replies);
+  } catch (e) {
+    res.status(500).send();
+  }
+});
+
+router.get("/replies/thread/:id", auth, async (req, res) => {
+  const match = {};
+  const sort = {};
+  if (req.query.completed) {
+    match.completed = req.query.completed === "true";
+  }
+  if (req.query.sortBy) {
+    const parts = req.query.sortBy.split(":");
+    sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
+  }
+
+  try {
+    const thread = await Thread.findById({ _id: req.params.id });
+
+    await thread
+      .populate({
+        path: "replies",
+        match,
+        options: {
+          limit: parseInt(req.query.limit),
+          skip: parseInt(req.query.skip),
+          sort
+        }
+      })
+      .execPopulate();
+
+    res.send(thread.replies);
   } catch (e) {
     res.status(500).send();
   }

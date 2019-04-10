@@ -1,5 +1,6 @@
 import Profile from "./Profile/Profile";
 import Main from "./Main/Main";
-import Thread from "./Thread/ThreadForm";
+import ThreadForm from "./Thread/ThreadForm";
+import ThreadDetail from "./Thread/ThreadDetail";
 
-export { Profile, Main, Thread };
+export { Profile, Main, ThreadForm, ThreadDetail };
