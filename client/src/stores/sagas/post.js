@@ -45,10 +45,10 @@ function* handleGetReply(action) {
 }
 
 const createThread = async action => {
-  const { subject, content, token } = action.payload;
+  const { subject, content, category, token } = action.payload;
   return await axios.post(
     "/thread",
-    { subject, content },
+    { subject, content, categories: category },
     {
       headers: {
         Authorization: token
@@ -81,7 +81,6 @@ const getReplies = async action => {
 
 const getThreads = async action => {
   const token = action.payload;
-  console.log(token);
   return await axios.get("/threads", {
     headers: {
       Authorization: token

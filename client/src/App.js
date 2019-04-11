@@ -14,8 +14,29 @@ import { connect } from "react-redux";
 import { logout } from "./stores/actions/auth";
 import Router from "./router/Router";
 import logo from "./images/organic-parents-logo.png";
+import categories from "./config-client/categories.json";
 
 class App extends Component {
+  renderCategories() {
+    return categories.map(data => {
+      return (
+        <div>
+          <p key={data.key}>
+            {data.text}{" "}
+            <span
+              style={{
+                backgroundColor: data.color,
+                height: "15px",
+                width: "15px",
+                borderRadius: "50%",
+                float: "right"
+              }}
+            />
+          </p>
+        </div>
+      );
+    });
+  }
   render() {
     return (
       <div className="App">
@@ -60,21 +81,14 @@ class App extends Component {
               </Grid.Column>
               <Grid.Column width={4}>
                 <Link to={"thread"}>new thread</Link>
-               <h4> Statistics</h4>
+                <h4> Statistics</h4>
                 <Segment>
                   <p>16 MEMBERS</p>
-                  <p>111 THREADs</p>
+                  <p>{this.props.threadCount} THREAD</p>
                   <p>12 REPLIES</p>
                 </Segment>
                 <h4>Categories</h4>
-                <div>
-                  <p>Lorem Ipsum</p>
-                  <p>Lorem Ipsum</p>
-                  <p>Lorem Ipsum</p>
-                  <p>Lorem Ipsum</p>
-                  <p>Lorem Ipsum</p>
-                  <p>Lorem Ipsum</p>
-                </div>
+                <div>{this.renderCategories()}</div>
               </Grid.Column>
             </Grid.Row>
           </Grid>
@@ -105,9 +119,10 @@ class App extends Component {
   }
 }
 
-function mapStateToProps({ authState }) {
+function mapStateToProps({ authState, postState }) {
   return {
-    token: authState.token
+    token: authState.token,
+    threadCount: postState.threadCount
   };
 }
 

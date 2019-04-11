@@ -3,10 +3,21 @@ import {
   SINGLE_THREAD,
   GET_REPLY_LOADED
 } from "../constants";
+import categories from "../../config-client/categories.json";
 
 const INITIAL_STATE = {
   threads: [],
-  thread: []
+  thread: [],
+  threadCount: 0
+};
+
+const getCategoryColor = category => {
+  for (let i in categories) {
+    if (category.categories[0] === categories[i].value) {
+      return categories[i].color;
+    }
+  }
+  return "#fff";
 };
 
 const setThread = (state, action) => {
@@ -15,14 +26,19 @@ const setThread = (state, action) => {
       error: ""
     });
   }
+  action.payload.data.threads.map(data => {
+    data.color = getCategoryColor(data);
+  });
 
+  console.log(action);
   return Object.assign({}, state, {
-    threads: action.payload.data
+    threads: action.payload.data.threads,
+    threadCount: action.payload.data.count
   });
 };
 
 const setReplies = (state, action) => {
-  const replies = {...state.thread};
+  const replies = { ...state.thread };
   replies.replies = action.payload.data;
 
   return Object.assign({}, state, {

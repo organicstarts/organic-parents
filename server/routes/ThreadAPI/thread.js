@@ -36,7 +36,11 @@ router.get("/threads", auth, async (req, res) => {
 
   try {
     const threads = await Thread.find({});
-    res.send(threads);
+    const threadObj = {
+      threads: threads,
+      count: threads.length
+    };
+    res.send(threadObj);
   } catch (e) {
     res.status(500).send();
   }

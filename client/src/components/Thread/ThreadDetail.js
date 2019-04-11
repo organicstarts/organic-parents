@@ -10,6 +10,7 @@ import {
   Comment
 } from "semantic-ui-react";
 import { postReply, getReplies } from "../../stores/actions/post";
+import defaultImg from "../../images/image.png";
 
 class ThreadDetail extends Component {
   constructor() {
@@ -42,26 +43,26 @@ class ThreadDetail extends Component {
   }
   showReplies() {
     const { thread } = this.props;
-    if(!thread.replies) {
-      return ""
+    if (!thread.replies) {
+      return "";
     }
     return thread.replies.map(reply => {
-    
       return (
         <Comment key={reply._id}>
-      <Comment.Avatar src={`http://localhost:3001/users/${reply.owner}/avatar`} />
-      <Comment.Content>
-        <Comment.Author as='a'>Matt</Comment.Author>
-        <Comment.Metadata>
-          <div>Today at 5:42PM</div>
-        </Comment.Metadata>
-        <Comment.Text>{reply.content}</Comment.Text>
-        <Comment.Actions>
-          <Comment.Action>Reply</Comment.Action>
-        </Comment.Actions>
-      </Comment.Content>
-    </Comment>
-
+          <Comment.Avatar
+            src={`http://localhost:3001/users/${reply.owner}/avatar`}
+          />
+          <Comment.Content>
+            <Comment.Author as="a">Matt</Comment.Author>
+            <Comment.Metadata>
+              <div>Today at 5:42PM</div>
+            </Comment.Metadata>
+            <Comment.Text>{reply.content}</Comment.Text>
+            <Comment.Actions>
+              <Comment.Action>Reply</Comment.Action>
+            </Comment.Actions>
+          </Comment.Content>
+        </Comment>
       );
     });
   }
@@ -76,6 +77,10 @@ class ThreadDetail extends Component {
             <Grid.Column width={2}>
               <Image
                 src={`http://localhost:3001/users/${thread.owner}/avatar`}
+                onError={e => {
+                  e.target.onerror = null;
+                  e.target.src = defaultImg;
+                }}
                 circular
                 size="tiny"
               />

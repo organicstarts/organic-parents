@@ -12,6 +12,10 @@ const threadSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
+    categories: {
+      type: [String],
+      required: true
+    },
     ownerName: {
       type: String,
       required: true,

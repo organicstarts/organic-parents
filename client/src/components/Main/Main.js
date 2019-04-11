@@ -12,6 +12,7 @@ import {
   Table,
   Icon
 } from "semantic-ui-react";
+import defaultImg from "../../images/image.png";
 import { ClipLoader } from "react-spinners";
 import { getThreads, setSingleThread } from "../../stores/actions/post";
 
@@ -22,12 +23,13 @@ class Main extends Component {
   }
 
   openThread(data) {
-    this.props.setSingleThread(data)
-    this.props.history.push('/threaddetail')
+    this.props.setSingleThread(data);
+    this.props.history.push("/threaddetail");
   }
   componentDidMount() {
     this.props.getThreads(this.props.token);
   }
+
   renderCategories() {
     if (!this.props.threads) {
       return (
@@ -42,20 +44,38 @@ class Main extends Component {
     return this.props.threads
       .map(data => {
         return (
-          <Segment color={data.color} key={data._id} onClick={() => this.openThread(data)}>
+          <Segment
+            color={data.color}
+            key={data._id}
+            onClick={() => this.openThread(data)}
+          >
             <Header as="h1">{data.subject}</Header>
             <Grid>
               <Grid.Row columns={2}>
                 <Grid.Column width={2}>
                   <Image
                     src={`http://localhost:3001/users/${data.owner}/avatar`}
+                    onError={e => {
+                      e.target.onerror = null;
+                      e.target.src = defaultImg;
+                    }}
                     circular
                     size="tiny"
                   />
                 </Grid.Column>
                 <Grid.Column>
                   {data.ownerName} <br />
-                  {data.updatedAt}
+                  {data.updatedAt} <br />
+                  {data.categories}{" "}
+                  <div
+                    style={{
+                      backgroundColor: data.color,
+                      height: "25px",
+                      width: "25px",
+                      borderRadius: "50%",
+                      float: "right"
+                    }}
+                  />
                 </Grid.Column>
               </Grid.Row>
               <Grid.Row>

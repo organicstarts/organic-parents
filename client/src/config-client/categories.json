@@ -1,0 +1,20 @@
+[
+  {
+    "key": "1",
+    "text": "General",
+    "value": "general",
+    "color": "olive"
+  },
+  {
+    "key": "2",
+    "text": "Formula",
+    "value": "formula",
+    "color": "teal"
+  },
+  {
+    "key": "3",
+    "text": "Reccomendation",
+    "value": "reccomendation",
+    "color": "pink"
+  }
+]

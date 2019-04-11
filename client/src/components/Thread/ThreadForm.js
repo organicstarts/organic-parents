@@ -2,24 +2,30 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Form, Button } from "semantic-ui-react";
 import { createNewThread } from "../../stores/actions/post";
+import categories from "../../config-client/categories.json";
 
 class ThreadForm extends Component {
   constructor() {
     super();
     this.state = {
       subject: "",
-      content: ""
+      content: "",
+      category: ""
     };
     this.handleChange = this.handleChange.bind(this);
     this.createThread = this.createThread.bind(this);
+    this.handleSelectChange = this.handleSelectChange.bind(this);
   }
 
   handleChange = e => this.setState({ [e.target.name]: e.target.value });
 
+  handleSelectChange = (e, data) => this.setState({ [data.name]: data.value });
+
   createThread() {
-    const { subject, content } = this.state;
+    const { subject, category, content } = this.state;
     const threadInfo = {
       subject,
+      category,
       content,
       token: this.props.token
     };
@@ -29,6 +35,13 @@ class ThreadForm extends Component {
   render() {
     return (
       <Form onSubmit={this.createThread} size="large">
+        <Form.Select
+          placeholder="Select Category"
+          name="category"
+          options={categories}
+          onChange={this.handleSelectChange}
+          required
+        />
         <Form.Input
           fluid
           placeholder="Title"
