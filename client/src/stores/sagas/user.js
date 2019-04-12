@@ -6,7 +6,17 @@ function* handleUpload(action) {
   try {
     const payload = yield call(uploadAvatar, action.payload);
     yield put({ type: UPLOAD_AVATAR_LOADED, payload });
-    window.location.reload(true)
+    window.location.reload(true);
+  } catch (e) {
+    yield put({ type: "API_ERRORED", payload: e });
+  }
+}
+
+function* handleDeleteUser(action) {
+  try {
+    const payload = yield call(deleteUser, action.payload);
+    yield put({ type: UPLOAD_AVATAR_LOADED, payload });
+    window.location.reload(true);
   } catch (e) {
     yield put({ type: "API_ERRORED", payload: e });
   }
@@ -22,5 +32,13 @@ const uploadAvatar = payload => {
     }
   });
 };
+const deleteUser = payload => {
+  return axios.delete("/users/me", {
+    headers: {
+      Authorization: payload,
+      "Content-Type": "multipart/form-data"
+    }
+  });
+};
 
-export { handleUpload };
+export { handleUpload, handleDeleteUser };

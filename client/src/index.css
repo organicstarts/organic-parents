@@ -18,3 +18,7 @@ code {
   background: #bcb9bd;
 
 }
+
+.ql-editor {
+  min-height: 15em;
+}

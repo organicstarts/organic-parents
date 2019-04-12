@@ -4,6 +4,7 @@ import {
   GET_REPLY_LOADED
 } from "../constants";
 import categories from "../../config-client/categories.json";
+import moment from "moment";
 
 const INITIAL_STATE = {
   threads: [],
@@ -28,6 +29,7 @@ const setThread = (state, action) => {
   }
   action.payload.data.threads.map(data => {
     data.color = getCategoryColor(data);
+    data.updatedAt = moment(data.updatedAt).format("LLL");
   });
 
   console.log(action);

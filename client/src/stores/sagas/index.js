@@ -7,10 +7,11 @@ import {
   CREATE_THREAD,
   GET_THREADS,
   POST_REPLY,
-  GET_REPLY
+  GET_REPLY,
+  DELETE_ACCOUNT
 } from "../constants";
 import { handleLogin, handleSignUp, handleLogout } from "./auth";
-import { handleUpload } from "./user";
+import { handleUpload, handleDeleteUser } from "./user";
 import {
   handleCreateThread,
   handleGetThread,
@@ -27,4 +28,5 @@ export default function* watcherSaga() {
   yield takeEvery(GET_THREADS, handleGetThread);
   yield takeEvery(POST_REPLY, handlePostReply);
   yield takeEvery(GET_REPLY, handleGetReply);
+  yield takeEvery(DELETE_ACCOUNT, handleDeleteUser);
 }

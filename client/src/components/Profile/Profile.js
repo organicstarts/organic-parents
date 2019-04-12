@@ -12,7 +12,7 @@ import {
   Table,
   Icon
 } from "semantic-ui-react";
-import { uploadPhoto } from "../../stores/actions/user";
+import { uploadPhoto, deleteAccount } from "../../stores/actions/user";
 import blankImg from "../../images/image.png";
 
 class Profile extends Component {
@@ -28,6 +28,7 @@ class Profile extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.enableEdit = this.enableEdit.bind(this);
+    this.deleteAccount = this.deleteAccount.bind(this);
   }
 
   handleChange = e => this.setState({ [e.target.name]: e.target.value });
@@ -38,6 +39,10 @@ class Profile extends Component {
 
   checkError() {
     return this.state.password !== this.state.rePassword;
+  }
+
+  deleteAccount() {
+    this.props.deleteAccount(this.props.token)
   }
 
   fileHandler = e => {
@@ -144,6 +149,9 @@ class Profile extends Component {
                     </div>
                   )}
                 </Form>
+                <Button circular onClick={this.deleteAccount}>
+                  Delete Account
+                </Button>
               </Segment>
             </Grid.Column>
             <Grid.Column>
@@ -241,6 +249,6 @@ function mapStateToProps({ authState, userState }) {
 export default withRouter(
   connect(
     mapStateToProps,
-    { uploadPhoto }
+    { uploadPhoto, deleteAccount }
   )(Profile)
 );

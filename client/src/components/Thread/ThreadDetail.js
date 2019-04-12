@@ -11,6 +11,10 @@ import {
 } from "semantic-ui-react";
 import { postReply, getReplies } from "../../stores/actions/post";
 import defaultImg from "../../images/image.png";
+import ReactHtmlParser from "react-html-parser";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import moment from "moment";
 
 class ThreadDetail extends Component {
   constructor() {
@@ -22,8 +26,9 @@ class ThreadDetail extends Component {
     this.submitReply = this.submitReply.bind(this);
   }
 
-  handleChange = e => this.setState({ [e.target.name]: e.target.value });
-
+  handleChange(value) {
+    this.setState({ content: value });
+  }
   submitReply() {
     const { content } = this.state;
     const replyInfo = {
@@ -53,11 +58,11 @@ class ThreadDetail extends Component {
             src={`http://localhost:3001/users/${reply.owner}/avatar`}
           />
           <Comment.Content>
-            <Comment.Author as="a">Matt</Comment.Author>
+            <Comment.Author as="a">{reply.ownerName}</Comment.Author>
             <Comment.Metadata>
-              <div>Today at 5:42PM</div>
+              <div>{moment(reply.updatedAt).format("LLL")}</div>
             </Comment.Metadata>
-            <Comment.Text>{reply.content}</Comment.Text>
+            <Comment.Text>{ReactHtmlParser(reply.content)}</Comment.Text>
             <Comment.Actions>
               <Comment.Action>Reply</Comment.Action>
             </Comment.Actions>
@@ -72,7 +77,7 @@ class ThreadDetail extends Component {
     return (
       <Segment>
         <Header as="h1">{thread.subject}</Header>
-        <Grid>
+        <Grid style={{ margin: "25px 0" }}>
           <Grid.Row columns={2}>
             <Grid.Column width={2}>
               <Image
@@ -82,40 +87,48 @@ class ThreadDetail extends Component {
                   e.target.src = defaultImg;
                 }}
                 circular
-                size="tiny"
+                size="medium"
               />
             </Grid.Column>
-            <Grid.Column>
+            <Grid.Column verticalAlign="middle">
               {thread.ownerName} <br />
               {thread.updatedAt}
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column>
-              <p style={{ wordBreak: "break-all" }}>{thread.content}</p>
+              <div style={{ wordBreak: "break-all" }}>
+                {ReactHtmlParser(thread.content)}
+              </div>
             </Grid.Column>
           </Grid.Row>
         </Grid>
-        <Comment.Group>{this.showReplies()}</Comment.Group>
-        <Form
-          onSubmit={this.submitReply}
-          size="large"
-          style={{ marginTop: "25px" }}
-        >
-          <Form.TextArea
-            placeholder="reply..."
-            name="content"
-            type="text"
-            value={this.state.content}
-            onChange={this.handleChange}
-            required
-            autoFocus
-          />
+        <ReactQuill
+          value={this.state.content}
+          onChange={this.handleChange}
+          theme="snow"
+          placeholder="What are your thoughts..."
+        />
 
-          <Button type="submit" fluid size="large" color="teal">
-            Add Reply
-          </Button>
-        </Form>
+        <Button
+          type="submit"
+          fluid
+          size="large"
+          onClick={this.submitReply}
+          color="teal"
+        >
+          Add Reply
+        </Button>
+        <Comment.Group
+          style={{
+            margin: "25px 0",
+            borderTop: "1px solid black",
+            maxWidth: "100%",
+            padding: "25px"
+          }}
+        >
+          {this.showReplies()}
+        </Comment.Group>
       </Segment>
     );
   }

@@ -16,6 +16,8 @@ import defaultImg from "../../images/image.png";
 import { ClipLoader } from "react-spinners";
 import { getThreads, setSingleThread } from "../../stores/actions/post";
 
+import categories from "../../config-client/categories.json";
+
 class Main extends Component {
   constructor() {
     super();
@@ -31,6 +33,26 @@ class Main extends Component {
   }
 
   renderCategories() {
+    return categories.map(data => {
+      return (
+        <div key={data.key}>
+          <p>
+            {data.text}{" "}
+            <span
+              style={{
+                backgroundColor: data.color,
+                height: "10px",
+                width: "10px",
+                borderRadius: "15%",
+                float: "right"
+              }}
+            />
+          </p>
+        </div>
+      );
+    });
+  }
+  renderThreads() {
     if (!this.props.threads) {
       return (
         <ClipLoader
@@ -49,10 +71,9 @@ class Main extends Component {
             key={data._id}
             onClick={() => this.openThread(data)}
           >
-            <Header as="h1">{data.subject}</Header>
             <Grid>
               <Grid.Row columns={2}>
-                <Grid.Column width={2}>
+                <Grid.Column width={3}>
                   <Image
                     src={`http://localhost:3001/users/${data.owner}/avatar`}
                     onError={e => {
@@ -60,31 +81,39 @@ class Main extends Component {
                       e.target.src = defaultImg;
                     }}
                     circular
-                    size="tiny"
+                    size="small"
                   />
                 </Grid.Column>
-                <Grid.Column>
-                  {data.ownerName} <br />
-                  {data.updatedAt} <br />
-                  {data.categories}{" "}
-                  <div
-                    style={{
-                      backgroundColor: data.color,
-                      height: "25px",
-                      width: "25px",
-                      borderRadius: "50%",
-                      float: "right"
-                    }}
-                  />
+                <Grid.Column width={13}>
+                  <Grid.Row>
+                    <Header as="h1">{data.subject}</Header>
+                  </Grid.Row>
+
+                  <Grid.Row>
+                    {`By: ${data.ownerName} - Updated on ${data.updatedAt}`}
+                  </Grid.Row>
+                  <Grid.Row style={{ marginTop: "5px" }}>
+                    <div
+                      style={{
+                        backgroundColor: data.color,
+                        height: "15px",
+                        width: "15px",
+                        borderRadius: "15%",
+                        float: "left",
+                        marginRight: "5px"
+                      }}
+                    />
+                    {data.categories}
+                  </Grid.Row>
                 </Grid.Column>
               </Grid.Row>
-              <Grid.Row>
+              {/* <Grid.Row>
                 <Grid.Column>
                   <Segment style={{ wordBreak: "break-all" }}>
-                    {data.content}
+                    {ReactHtmlParser(data.content)}
                   </Segment>
                 </Grid.Column>
-              </Grid.Row>
+              </Grid.Row> */}
             </Grid>
           </Segment>
         );
@@ -92,7 +121,24 @@ class Main extends Component {
       .reverse();
   }
   render() {
-    return <div>{this.renderCategories()}</div>;
+    return (
+      <Grid>
+        <Grid.Row columns={2}>
+          <Grid.Column width={10}>{this.renderThreads()}</Grid.Column>
+          <Grid.Column width={4}>
+            <Link to={"thread"}>new thread</Link>
+            <h4> Statistics</h4>
+            <Segment>
+              <p>16 MEMBERS</p>
+              <p>{this.props.threadCount} THREAD</p>
+              <p>12 REPLIES</p>
+            </Segment>
+            <h4>Categories</h4>
+            <div>{this.renderCategories()}</div>
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+    );
   }
 }
 
@@ -106,7 +152,8 @@ function mapStateToProps({ authState, userState, postState }) {
     firstName: userState.firstName,
     lastName: userState.lastName,
     id: userState._id,
-    threads: postState.threads
+    threads: postState.threads,
+    threadCount: postState.threadCount
   };
 }
 export default withRouter(

@@ -9,6 +9,7 @@ const auth = require("../../middleware/auth");
 router.post("/reply", auth, async (req, res) => {
   const reply = new Reply({
     ...req.body,
+    ownerName: `${req.user.firstName} ${req.user.lastName}`,
     owner: req.user._id
   });
 

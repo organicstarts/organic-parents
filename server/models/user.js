@@ -122,7 +122,11 @@ userSchema.pre("save", async function(next) {
 // Delete user posts when user is removed
 userSchema.pre("remove", async function(next) {
   const user = this;
-  await Reply.deleteMany({ owner: user._id });
+  const replies = await Reply.findMany({ owner: user._id });
+  replies.map(reply => {
+    (reply.content = "[deleted]"), (reply.ownerName = "[deleted]");
+    reply.save();
+  });
   next();
 });
 
