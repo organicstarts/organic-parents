@@ -2,7 +2,9 @@ import {
   CREATE_THREAD_LOADED,
   GET_THREADS_LOADED,
   POST_REPLY_LOADED,
-  GET_REPLY_LOADED
+  GET_REPLY_LOADED,
+  DELETE_THREAD_LOADED,
+  GET_REPLIES_COUNT_LOADED
 } from "../constants";
 import { call, put } from "redux-saga/effects";
 import axios from "axios";
@@ -25,6 +27,15 @@ function* handleGetThread(action) {
   }
 }
 
+function* handleDeleteThread(action) {
+  try {
+    const payload = yield call(deleteThread, action);
+    yield put({ type: DELETE_THREAD_LOADED, payload });
+  } catch (e) {
+    yield put({ type: "API_ERRORED", payload: e });
+  }
+}
+
 function* handlePostReply(action) {
   try {
     const payload = yield call(postReply, action);
@@ -39,6 +50,15 @@ function* handleGetReply(action) {
   try {
     const payload = yield call(getReplies, action);
     yield put({ type: GET_REPLY_LOADED, payload });
+  } catch (e) {
+    yield put({ type: "API_ERRORED", payload: e });
+  }
+}
+
+function* handleGetRepliesCount(action) {
+  try {
+    const payload = yield call(getRepliesCount, action);
+    yield put({ type: GET_REPLIES_COUNT_LOADED, payload });
   } catch (e) {
     yield put({ type: "API_ERRORED", payload: e });
   }
@@ -81,11 +101,47 @@ const getReplies = async action => {
 
 const getThreads = async action => {
   const token = action.payload;
-  return await axios.get("/threads", {
+  return await axios
+    .get("/threads", {
+      headers: {
+        Authorization: token
+      }
+    })
+    .then(async datas => {
+      await Promise.all(
+        datas.data.threads.map(async data => {
+          data.repliesCount = await getReplies({
+            payload: { threadId: data._id, token }
+          }).then(data => data.data.length);
+        })
+      );
+      return datas;
+    });
+};
+
+const deleteThread = async action => {
+  const { threadId, token } = action.payload;
+  return await axios.delete(`/thread/${threadId}`, {
     headers: {
       Authorization: token
     }
   });
 };
 
-export { handleCreateThread, handleGetThread, handlePostReply, handleGetReply };
+const getRepliesCount = async action => {
+  const  token  = action.payload;
+  return await axios.get("/replies/all", {
+    headers: {
+      Authorization: token
+    }
+  });
+};
+
+export {
+  handleCreateThread,
+  handleGetThread,
+  handlePostReply,
+  handleGetReply,
+  handleDeleteThread,
+  handleGetRepliesCount
+};

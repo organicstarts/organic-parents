@@ -8,7 +8,7 @@ const userRoutes = require("./routes/UserAPI/user");
 const replyRoutes = require("./routes/ReplyAPI/reply");
 const threadRoutes = require("./routes/threadAPI/thread");
 const staticFiles = express.static(path.join(__dirname, "../../client/build"));
-
+require("./config/seed");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(staticFiles);

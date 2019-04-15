@@ -3,6 +3,7 @@ const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Reply = require("./reply");
+const Thread = require("./thread");
 
 const userSchema = new mongoose.Schema(
   {
@@ -47,6 +48,11 @@ const userSchema = new mongoose.Schema(
           throw new Error("Age must be a postive number");
         }
       }
+    },
+    role: {
+      type: String,
+      default: "user",
+      enum: ["user", "admin"]
     },
     tokens: [
       {
@@ -122,11 +128,19 @@ userSchema.pre("save", async function(next) {
 // Delete user posts when user is removed
 userSchema.pre("remove", async function(next) {
   const user = this;
-  const replies = await Reply.findMany({ owner: user._id });
-  replies.map(reply => {
-    (reply.content = "[deleted]"), (reply.ownerName = "[deleted]");
-    reply.save();
-  });
+  await Reply.updateMany(
+    { owner: user._id },
+    { content: "[deleted]", ownerName: "[deleted]" }
+  );
+  await Thread.updateMany(
+    { owner: user._id },
+    {
+      content: "[deleted]",
+      ownerName: "[deleted]",
+      subject: "[deleted]"
+    }
+  );
+
   next();
 });
 

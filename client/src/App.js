@@ -55,27 +55,6 @@ class App extends Component {
         <Container style={{ marginTop: "200px" }}>
           <Router />
         </Container>
-        <Menu
-          fixed="bottom"
-          size="massive"
-          borderless
-          style={{ height: "130px" }}
-        >
-          <Menu.Item
-            position="right"
-            style={{ marginTop: "15px", marginRight: "15px" }}
-          >
-            <Header as="h4">Copyright 2019 Organic Parents</Header>
-          </Menu.Item>
-          <Menu.Item
-            position="right"
-            style={{ marginTop: "15px", marginRight: "15px" }}
-          >
-            <Icon name="instagram" size="huge" />
-            <Icon name="facebook" size="huge" />
-            <Icon name="youtube" size="huge" />
-          </Menu.Item>
-        </Menu>
       </div>
     );
   }
@@ -83,7 +62,7 @@ class App extends Component {
 
 function mapStateToProps({ authState }) {
   return {
-    token: authState.token,
+    token: authState.token
   };
 }
 

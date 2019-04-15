@@ -10,6 +10,7 @@ function* handleLogin(action) {
   try {
     const payload = yield call(login, action.payload);
     yield put({ type: AUTH_LOGIN_LOADED, payload });
+    document.location.href = "/";
   } catch (e) {
     yield put({ type: "API_ERRORED", payload: e });
   }
@@ -18,6 +19,7 @@ function* handleSignUp(action) {
   try {
     const payload = yield call(signUp, action.payload);
     yield put({ type: AUTH_SIGNUP_LOADED, payload });
+    document.location.href = "/";
   } catch (e) {
     yield put({ type: "API_ERRORED", payload: e });
   }

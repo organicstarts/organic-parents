@@ -14,8 +14,13 @@ import {
 } from "semantic-ui-react";
 import defaultImg from "../../images/image.png";
 import { ClipLoader } from "react-spinners";
-import { getThreads, setSingleThread } from "../../stores/actions/post";
-
+import {
+  getThreads,
+  setSingleThread,
+  deleteThread,
+  getRepliesCount
+} from "../../stores/actions/post";
+import { getUsersCount } from "../../stores/actions/user";
 import categories from "../../config-client/categories.json";
 
 class Main extends Component {
@@ -30,6 +35,8 @@ class Main extends Component {
   }
   componentDidMount() {
     this.props.getThreads(this.props.token);
+    this.props.getRepliesCount(this.props.token);
+    this.props.getUsersCount(this.props.token);
   }
 
   renderCategories() {
@@ -64,13 +71,9 @@ class Main extends Component {
       );
     }
     return this.props.threads
-      .map(data => {
+      .map((data, index) => {
         return (
-          <Segment
-            color={data.color}
-            key={data._id}
-            onClick={() => this.openThread(data)}
-          >
+          <Segment color={data.color} key={data._id}>
             <Grid>
               <Grid.Row columns={2}>
                 <Grid.Column width={3}>
@@ -90,7 +93,7 @@ class Main extends Component {
                   </Grid.Row>
 
                   <Grid.Row>
-                    {`By: ${data.ownerName} - Updated on ${data.updatedAt}`}
+                    {`By: ${data.ownerName} - Created on ${data.createdAt}`}
                   </Grid.Row>
                   <Grid.Row style={{ marginTop: "5px" }}>
                     <div
@@ -105,6 +108,32 @@ class Main extends Component {
                     />
                     {data.categories}
                   </Grid.Row>
+                  <Grid.Column>
+                    <Icon
+                      link
+                      name="comment alternate outline"
+                      onClick={() => this.openThread(data)}
+                    >
+                      {data.repliesCount}
+                    </Icon>
+                  </Grid.Column>
+                  <Grid.Column>
+                    {this.props.role === "admin" ? (
+                      <Icon
+                        link
+                        name="trash alternate outline"
+                        onClick={() =>
+                          this.props.deleteThread(
+                            data._id,
+                            this.props.token,
+                            index
+                          )
+                        }
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </Grid.Column>
                 </Grid.Column>
               </Grid.Row>
               {/* <Grid.Row>
@@ -129,9 +158,9 @@ class Main extends Component {
             <Link to={"thread"}>new thread</Link>
             <h4> Statistics</h4>
             <Segment>
-              <p>16 MEMBERS</p>
+              <p>{this.props.userCount} MEMBERS</p>
               <p>{this.props.threadCount} THREAD</p>
-              <p>12 REPLIES</p>
+              <p>{this.props.repliesCount} REPLIES</p>
             </Segment>
             <h4>Categories</h4>
             <div>{this.renderCategories()}</div>
@@ -152,13 +181,22 @@ function mapStateToProps({ authState, userState, postState }) {
     firstName: userState.firstName,
     lastName: userState.lastName,
     id: userState._id,
+    role: userState.role,
     threads: postState.threads,
-    threadCount: postState.threadCount
+    threadCount: postState.threadCount,
+    repliesCount: postState.repliesCount,
+    userCount: userState.usersCount
   };
 }
 export default withRouter(
   connect(
     mapStateToProps,
-    { getThreads, setSingleThread }
+    {
+      getThreads,
+      setSingleThread,
+      deleteThread,
+      getRepliesCount,
+      getUsersCount
+    }
   )(Main)
 );

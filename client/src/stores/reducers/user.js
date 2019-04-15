@@ -1,13 +1,16 @@
 import {
   AUTH_LOGIN_LOADED,
   AUTH_SIGNUP_LOADED,
-  AUTH_LOGOUT_LOADED
+  AUTH_LOGOUT_LOADED,
+  GET_USERS_COUNT_LOADED
 } from "../constants";
 
 const INITIAL_STATE = {
   firstName: "",
   lastName: "",
   email: "",
+  role: "",
+  usersCount: 0
 };
 
 const setUser = (state, action) => {
@@ -33,6 +36,11 @@ function userReducer(state = INITIAL_STATE, action) {
     }
     case AUTH_LOGOUT_LOADED: {
       return { ...INITIAL_STATE };
+    }
+    case GET_USERS_COUNT_LOADED: {
+      return Object.assign({}, state, {
+        usersCount: action.payload.data.user
+      });
     }
     case "API_ERRORED": {
       return { ...INITIAL_STATE };

@@ -13,6 +13,7 @@ import {
   Icon
 } from "semantic-ui-react";
 import { uploadPhoto, deleteAccount } from "../../stores/actions/user";
+import { logout } from "../../stores/actions/auth";
 import blankImg from "../../images/image.png";
 
 class Profile extends Component {
@@ -43,6 +44,7 @@ class Profile extends Component {
 
   deleteAccount() {
     this.props.deleteAccount(this.props.token)
+    this.props.logout(this.props.token)
   }
 
   fileHandler = e => {
@@ -249,6 +251,6 @@ function mapStateToProps({ authState, userState }) {
 export default withRouter(
   connect(
     mapStateToProps,
-    { uploadPhoto, deleteAccount }
+    { uploadPhoto, deleteAccount, logout }
   )(Profile)
 );

@@ -1,7 +1,10 @@
 import {
   GET_THREADS_LOADED,
   SINGLE_THREAD,
-  GET_REPLY_LOADED
+  GET_REPLY_LOADED,
+  DELETE_THREAD_LOADED,
+  DELETE_THREAD,
+  GET_REPLIES_COUNT_LOADED
 } from "../constants";
 import categories from "../../config-client/categories.json";
 import moment from "moment";
@@ -9,7 +12,8 @@ import moment from "moment";
 const INITIAL_STATE = {
   threads: [],
   thread: [],
-  threadCount: 0
+  threadCount: 0,
+  repliesCount: 0
 };
 
 const getCategoryColor = category => {
@@ -30,9 +34,9 @@ const setThread = (state, action) => {
   action.payload.data.threads.map(data => {
     data.color = getCategoryColor(data);
     data.updatedAt = moment(data.updatedAt).format("LLL");
+    data.createdAt = moment(data.createdAt).format("LLL");
   });
 
-  console.log(action);
   return Object.assign({}, state, {
     threads: action.payload.data.threads,
     threadCount: action.payload.data.count
@@ -48,6 +52,15 @@ const setReplies = (state, action) => {
   });
 };
 
+const removeThread = (state, action) => {
+  const tempThreads = [...state.threads];
+  tempThreads.splice(state.deleteIndex, 1);
+
+  return Object.assign({}, state, {
+    threads: tempThreads
+  });
+};
+
 function postReducer(state = INITIAL_STATE, action) {
   switch (action.type) {
     case GET_THREADS_LOADED: {
@@ -60,6 +73,19 @@ function postReducer(state = INITIAL_STATE, action) {
     }
     case GET_REPLY_LOADED: {
       return setReplies(state, action);
+    }
+    case DELETE_THREAD: {
+      return Object.assign({}, state, {
+        deleteIndex: action.payload.index
+      });
+    }
+    case DELETE_THREAD_LOADED: {
+      return removeThread(state, action);
+    }
+    case GET_REPLIES_COUNT_LOADED: {
+      return Object.assign({}, state, {
+        repliesCount: action.payload.data.replies
+      });
     }
     default:
       return state;

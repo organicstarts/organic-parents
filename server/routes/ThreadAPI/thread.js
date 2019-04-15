@@ -62,4 +62,23 @@ router.get("/thread/:id", auth, async (req, res) => {
   }
 });
 
+/*-------------------------------------------------------------------
+                            DELETE REQUEST                            
+---------------------------------------------------------------------*/
+router.delete("/thread/:id", auth, async (req, res) => {
+  try {
+    const thread = await Thread.findOneAndDelete({
+      _id: req.params.id
+    });
+
+    if (!thread) {
+      res.status(404).send();
+    }
+
+    res.send(thread);
+  } catch (e) {
+    res.status(500).send();
+  }
+});
+
 module.exports = router;

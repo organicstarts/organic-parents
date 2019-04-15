@@ -1,4 +1,12 @@
-import { CREATE_THREAD, GET_THREADS, SINGLE_THREAD, POST_REPLY, GET_REPLY } from "../constants";
+import {
+  CREATE_THREAD,
+  GET_THREADS,
+  SINGLE_THREAD,
+  POST_REPLY,
+  GET_REPLY,
+  DELETE_THREAD,
+  GET_REPLIES_COUNT
+} from "../constants";
 
 const createNewThread = threadInfo => ({
   type: CREATE_THREAD,
@@ -10,18 +18,37 @@ const getThreads = token => ({
   payload: token
 });
 
-const setSingleThread = data =>({
+const setSingleThread = data => ({
   type: SINGLE_THREAD,
   payload: data
-})
+});
 
-const postReply = replyInfo =>({
+const postReply = replyInfo => ({
   type: POST_REPLY,
   payload: replyInfo
-})
+});
 
-const getReplies = replyInfo =>({
+const getReplies = replyInfo => ({
   type: GET_REPLY,
   payload: replyInfo
-})
-export { createNewThread, getThreads, setSingleThread, postReply, getReplies };
+});
+
+const deleteThread = (threadId, token, index) => ({
+  type: DELETE_THREAD,
+  payload: { threadId, token, index }
+});
+
+const getRepliesCount = token => ({
+  type: GET_REPLIES_COUNT,
+  payload: token
+});
+
+export {
+  createNewThread,
+  getThreads,
+  setSingleThread,
+  postReply,
+  getReplies,
+  deleteThread,
+  getRepliesCount
+};
