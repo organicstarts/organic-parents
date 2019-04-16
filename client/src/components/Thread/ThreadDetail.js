@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import {
   Form,
   Button,
@@ -10,6 +11,7 @@ import {
   Comment
 } from "semantic-ui-react";
 import { postReply, getReplies } from "../../stores/actions/post";
+import { getUser } from "../../stores/actions/user";
 import defaultImg from "../../images/image.png";
 import ReactHtmlParser from "react-html-parser";
 import ReactQuill from "react-quill";
@@ -91,7 +93,14 @@ class ThreadDetail extends Component {
               />
             </Grid.Column>
             <Grid.Column verticalAlign="middle">
-              {thread.ownerName} <br />
+              <Link
+                to="/userprofile"
+                onClick={() =>
+                  this.props.getUser(thread.owner, this.props.token)
+                }
+              >
+                {thread.ownerName}{" "}
+              </Link>
               {thread.updatedAt}
             </Grid.Column>
           </Grid.Row>
@@ -104,6 +113,7 @@ class ThreadDetail extends Component {
           </Grid.Row>
         </Grid>
         <ReactQuill
+          readOnly={this.props.thread.lock ? true : false}
           value={this.state.content}
           onChange={this.handleChange}
           theme="snow"
@@ -111,6 +121,7 @@ class ThreadDetail extends Component {
         />
 
         <Button
+          disabled={this.props.thread.lock ? true : false}
           type="submit"
           fluid
           size="large"
@@ -142,5 +153,5 @@ function mapStateToProps({ authState, postState }) {
 
 export default connect(
   mapStateToProps,
-  { postReply, getReplies }
+  { postReply, getReplies, getUser }
 )(ThreadDetail);

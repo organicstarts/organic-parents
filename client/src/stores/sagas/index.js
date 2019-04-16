@@ -11,17 +11,25 @@ import {
   DELETE_ACCOUNT,
   DELETE_THREAD,
   GET_USERS_COUNT,
-  GET_REPLIES_COUNT
+  GET_REPLIES_COUNT,
+  LOCK_THREAD,
+  GET_USER
 } from "../constants";
 import { handleLogin, handleSignUp, handleLogout } from "./auth";
-import { handleUpload, handleDeleteUser, handleUsersCount } from "./user";
+import {
+  handleUpload,
+  handleDeleteUser,
+  handleUsersCount,
+  handleGetUser
+} from "./user";
 import {
   handleCreateThread,
   handleGetThread,
   handlePostReply,
   handleGetReply,
   handleDeleteThread,
-  handleGetRepliesCount
+  handleGetRepliesCount,
+  handleLockThread
 } from "./post";
 
 export default function* watcherSaga() {
@@ -37,4 +45,6 @@ export default function* watcherSaga() {
   yield takeEvery(DELETE_THREAD, handleDeleteThread);
   yield takeEvery(GET_USERS_COUNT, handleUsersCount);
   yield takeEvery(GET_REPLIES_COUNT, handleGetRepliesCount);
+  yield takeEvery(LOCK_THREAD, handleLockThread);
+  yield takeEvery(GET_USER, handleGetUser);
 }

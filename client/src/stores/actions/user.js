@@ -1,4 +1,4 @@
-import { UPLOAD_AVATAR, DELETE_ACCOUNT, GET_USERS_COUNT } from "../constants";
+import { UPLOAD_AVATAR, DELETE_ACCOUNT, GET_USERS_COUNT, GET_USER } from "../constants";
 
 const uploadPhoto = state => ({
   type: UPLOAD_AVATAR,
@@ -15,4 +15,9 @@ const getUsersCount = token => ({
   payload: token
 });
 
-export { uploadPhoto, deleteAccount, getUsersCount };
+const getUser = (userId, token) => ({
+  type: GET_USER,
+  payload: {userId, token}
+})
+
+export { uploadPhoto, deleteAccount, getUsersCount, getUser };

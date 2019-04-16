@@ -18,7 +18,8 @@ import {
   getThreads,
   setSingleThread,
   deleteThread,
-  getRepliesCount
+  getRepliesCount,
+  lockThread
 } from "../../stores/actions/post";
 import { getUsersCount } from "../../stores/actions/user";
 import categories from "../../config-client/categories.json";
@@ -119,17 +120,26 @@ class Main extends Component {
                   </Grid.Column>
                   <Grid.Column>
                     {this.props.role === "admin" ? (
-                      <Icon
-                        link
-                        name="trash alternate outline"
-                        onClick={() =>
-                          this.props.deleteThread(
-                            data._id,
-                            this.props.token,
-                            index
-                          )
-                        }
-                      />
+                      <div>
+                        <Icon
+                          link
+                          name="trash alternate outline"
+                          onClick={() =>
+                            this.props.deleteThread(
+                              data._id,
+                              this.props.token,
+                              index
+                            )
+                          }
+                        />
+                        <Icon
+                          link
+                          name="lock"
+                          onClick={() =>
+                            this.props.lockThread(data._id, this.props.token)
+                          }
+                        />
+                      </div>
                     ) : (
                       ""
                     )}
@@ -196,7 +206,8 @@ export default withRouter(
       setSingleThread,
       deleteThread,
       getRepliesCount,
-      getUsersCount
+      getUsersCount,
+      lockThread
     }
   )(Main)
 );

@@ -4,7 +4,8 @@ import {
   POST_REPLY_LOADED,
   GET_REPLY_LOADED,
   DELETE_THREAD_LOADED,
-  GET_REPLIES_COUNT_LOADED
+  GET_REPLIES_COUNT_LOADED,
+  LOCK_THREAD_LOADED
 } from "../constants";
 import { call, put } from "redux-saga/effects";
 import axios from "axios";
@@ -59,6 +60,15 @@ function* handleGetRepliesCount(action) {
   try {
     const payload = yield call(getRepliesCount, action);
     yield put({ type: GET_REPLIES_COUNT_LOADED, payload });
+  } catch (e) {
+    yield put({ type: "API_ERRORED", payload: e });
+  }
+}
+
+function* handleLockThread(action) {
+  try {
+    const payload = yield call(lockThread, action);
+    yield put({ type: LOCK_THREAD_LOADED, payload });
   } catch (e) {
     yield put({ type: "API_ERRORED", payload: e });
   }
@@ -127,9 +137,23 @@ const deleteThread = async action => {
     }
   });
 };
+const lockThread = async action => {
+  const { threadId, token } = action.payload;
+  return await axios.patch(
+    `/thread/lock`,
+    {
+      _id: threadId
+    },
+    {
+      headers: {
+        Authorization: token
+      }
+    }
+  );
+};
 
 const getRepliesCount = async action => {
-  const  token  = action.payload;
+  const token = action.payload;
   return await axios.get("/replies/all", {
     headers: {
       Authorization: token
@@ -143,5 +167,6 @@ export {
   handlePostReply,
   handleGetReply,
   handleDeleteThread,
-  handleGetRepliesCount
+  handleGetRepliesCount,
+  handleLockThread
 };

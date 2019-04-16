@@ -21,6 +21,10 @@ const threadSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
+    lock: {
+      type: Boolean,
+      default: false
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

@@ -63,9 +63,34 @@ router.get("/thread/:id", auth, async (req, res) => {
 });
 
 /*-------------------------------------------------------------------
+                            UPDATE REQUEST                            
+---------------------------------------------------------------------*/
+router.patch("/thread/lock", auth, async (req, res) => {
+  if (!req.user.role === "admin") {
+    res.status(400).send({ msg: "Not Authorized to lock/unlock thread" });
+  }
+
+  try {
+    const thread = await Thread.findOne({ _id: req.body._id });
+    if (!thread) {
+      return res.status(404).send();
+    }
+    thread.lock = !thread.lock;
+    await thread.save();
+    res.status(200).send(thread);
+  } catch (e) {
+    res.status(500).send();
+  }
+});
+
+/*-------------------------------------------------------------------
                             DELETE REQUEST                            
 ---------------------------------------------------------------------*/
 router.delete("/thread/:id", auth, async (req, res) => {
+  if (!req.user.role === "admin") {
+    res.status(400).send({ msg: "Not Authorized to Delete" });
+  }
+
   try {
     const thread = await Thread.findOneAndDelete({
       _id: req.params.id

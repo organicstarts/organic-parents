@@ -4,7 +4,8 @@ import {
   GET_REPLY_LOADED,
   DELETE_THREAD_LOADED,
   DELETE_THREAD,
-  GET_REPLIES_COUNT_LOADED
+  GET_REPLIES_COUNT_LOADED,
+  LOCK_THREAD_LOADED
 } from "../constants";
 import categories from "../../config-client/categories.json";
 import moment from "moment";
@@ -61,6 +62,20 @@ const removeThread = (state, action) => {
   });
 };
 
+const setLockThread = (state, action) => {
+  const tempThreads = [...state.threads];
+  tempThreads.map(thread => {
+    if (thread._id === action.payload.data._id) {
+      thread.lock = action.payload.data.lock;
+    }
+  });
+  console.log(action);
+
+  return Object.assign({}, state, {
+    threads: tempThreads
+  });
+};
+
 function postReducer(state = INITIAL_STATE, action) {
   switch (action.type) {
     case GET_THREADS_LOADED: {
@@ -86,6 +101,9 @@ function postReducer(state = INITIAL_STATE, action) {
       return Object.assign({}, state, {
         repliesCount: action.payload.data.replies
       });
+    }
+    case LOCK_THREAD_LOADED: {
+      return setLockThread(state, action);
     }
     default:
       return state;

@@ -2,7 +2,8 @@ import {
   AUTH_LOGIN_LOADED,
   AUTH_SIGNUP_LOADED,
   AUTH_LOGOUT_LOADED,
-  GET_USERS_COUNT_LOADED
+  GET_USERS_COUNT_LOADED,
+  GET_USER_LOADED
 } from "../constants";
 
 const INITIAL_STATE = {
@@ -10,7 +11,8 @@ const INITIAL_STATE = {
   lastName: "",
   email: "",
   role: "",
-  usersCount: 0
+  usersCount: 0,
+  otherUser: {}
 };
 
 const setUser = (state, action) => {
@@ -24,6 +26,19 @@ const setUser = (state, action) => {
   const keys = Object.keys(action.payload.user);
   keys.forEach(key => (userInfo[key] = action.payload.user[key]));
   return Object.assign({}, state, userInfo);
+};
+
+const setUserInfo = (state, action) => {
+  if (action.payload.errmsg) {
+    return Object.assign({}, state, {
+      error: ""
+    });
+  }
+
+  let userInfo = {};
+  const keys = Object.keys(action.payload.data);
+  keys.forEach(key => (userInfo[key] = action.payload.data[key]));
+  return Object.assign({}, state, { otherUser: userInfo });
 };
 
 function userReducer(state = INITIAL_STATE, action) {
@@ -41,6 +56,9 @@ function userReducer(state = INITIAL_STATE, action) {
       return Object.assign({}, state, {
         usersCount: action.payload.data.user
       });
+    }
+    case GET_USER_LOADED: {
+      return setUserInfo(state, action);
     }
     case "API_ERRORED": {
       return { ...INITIAL_STATE };

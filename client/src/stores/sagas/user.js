@@ -1,6 +1,6 @@
 import { call, put } from "redux-saga/effects";
 import axios from "axios";
-import { UPLOAD_AVATAR_LOADED, GET_USERS_COUNT_LOADED } from "../constants";
+import { UPLOAD_AVATAR_LOADED, GET_USERS_COUNT_LOADED , GET_USER_LOADED} from "../constants";
 
 function* handleUpload(action) {
   try {
@@ -30,10 +30,28 @@ function* handleUsersCount(action) {
     yield put({ type: "API_ERRORED", payload: e });
   }
 }
+function* handleGetUser(action) {
+  try {
+    const payload = yield call(getUser, action.payload);
+    yield put({ type: GET_USER_LOADED, payload });
+  } catch (e) {
+    yield put({ type: "API_ERRORED", payload: e });
+  }
+}
 
 const getUsersCount = async action => {
   const token = action.payload;
   return await axios.get("/user/all", {
+    headers: {
+      Authorization: token
+    }
+  });
+};
+
+const getUser = async action => {
+  const { userId, token } = action;
+
+  return await axios.get(`/users/${userId}`, {
     headers: {
       Authorization: token
     }
@@ -59,4 +77,4 @@ const deleteUser = payload => {
   });
 };
 
-export { handleUpload, handleDeleteUser, handleUsersCount };
+export { handleUpload, handleDeleteUser, handleUsersCount, handleGetUser };
