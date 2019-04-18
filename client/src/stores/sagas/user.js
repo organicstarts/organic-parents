@@ -1,6 +1,13 @@
 import { call, put } from "redux-saga/effects";
 import axios from "axios";
-import { UPLOAD_AVATAR_LOADED, GET_USERS_COUNT_LOADED , GET_USER_LOADED} from "../constants";
+import {
+  UPLOAD_AVATAR_LOADED,
+  GET_USERS_COUNT_LOADED,
+  GET_USER_LOADED,
+  BAN_USER_LOADED,
+  CHANGE_ROLE_LOADED,
+  UPDATE_USER_LOADED
+} from "../constants";
 
 function* handleUpload(action) {
   try {
@@ -39,6 +46,32 @@ function* handleGetUser(action) {
   }
 }
 
+function* handleBanUser(action) {
+  try {
+    const payload = yield call(banUser, action.payload);
+    yield put({ type: BAN_USER_LOADED, payload });
+  } catch (e) {
+    yield put({ type: "API_ERRORED", payload: e });
+  }
+}
+function* handleChangeRole(action) {
+  try {
+    const payload = yield call(changeRole, action.payload);
+    yield put({ type: CHANGE_ROLE_LOADED, payload });
+  } catch (e) {
+    yield put({ type: "API_ERRORED", payload: e });
+  }
+}
+function* handleUpdateUser(action) {
+  try {
+    const payload = yield call(updateUser, action.payload);
+    yield put({ type: UPDATE_USER_LOADED, payload });
+    window.location.reload(true);
+  } catch (e) {
+    yield put({ type: "API_ERRORED", payload: e });
+  }
+}
+
 const getUsersCount = async action => {
   const token = action.payload;
   return await axios.get("/user/all", {
@@ -46,6 +79,17 @@ const getUsersCount = async action => {
       Authorization: token
     }
   });
+};
+
+const updateUser = async action => {
+  const { token, updateInfo } = action;
+  return await axios
+    .patch("/users/me", updateInfo, {
+      headers: {
+        Authorization: token
+      }
+    })
+    .then(response => response.data);
 };
 
 const getUser = async action => {
@@ -56,6 +100,34 @@ const getUser = async action => {
       Authorization: token
     }
   });
+};
+
+const banUser = async action => {
+  const { userId, token } = action;
+
+  return await axios.patch(
+    `/users/ban`,
+    { id: userId },
+    {
+      headers: {
+        Authorization: token
+      }
+    }
+  );
+};
+
+const changeRole = async action => {
+  const { userId, token } = action;
+
+  return await axios.patch(
+    `/users/role`,
+    { id: userId },
+    {
+      headers: {
+        Authorization: token
+      }
+    }
+  );
 };
 
 const uploadAvatar = payload => {
@@ -77,4 +149,12 @@ const deleteUser = payload => {
   });
 };
 
-export { handleUpload, handleDeleteUser, handleUsersCount, handleGetUser };
+export {
+  handleUpload,
+  handleDeleteUser,
+  handleUsersCount,
+  handleGetUser,
+  handleBanUser,
+  handleChangeRole,
+  handleUpdateUser
+};

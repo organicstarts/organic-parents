@@ -5,7 +5,8 @@ import {
   DELETE_THREAD_LOADED,
   DELETE_THREAD,
   GET_REPLIES_COUNT_LOADED,
-  LOCK_THREAD_LOADED
+  LOCK_THREAD_LOADED,
+  GET_MY_REPLY_LOADED
 } from "../constants";
 import categories from "../../config-client/categories.json";
 import moment from "moment";
@@ -14,7 +15,8 @@ const INITIAL_STATE = {
   threads: [],
   thread: [],
   threadCount: 0,
-  repliesCount: 0
+  repliesCount: 0,
+  myReplies:[]
 };
 
 const getCategoryColor = category => {
@@ -69,7 +71,6 @@ const setLockThread = (state, action) => {
       thread.lock = action.payload.data.lock;
     }
   });
-  console.log(action);
 
   return Object.assign({}, state, {
     threads: tempThreads
@@ -101,6 +102,11 @@ function postReducer(state = INITIAL_STATE, action) {
       return Object.assign({}, state, {
         repliesCount: action.payload.data.replies
       });
+    }
+    case GET_MY_REPLY_LOADED: {
+      return Object.assign({},state, {
+        myReplies: action.payload.data
+      })
     }
     case LOCK_THREAD_LOADED: {
       return setLockThread(state, action);

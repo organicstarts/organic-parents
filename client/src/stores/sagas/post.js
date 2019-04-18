@@ -5,7 +5,8 @@ import {
   GET_REPLY_LOADED,
   DELETE_THREAD_LOADED,
   GET_REPLIES_COUNT_LOADED,
-  LOCK_THREAD_LOADED
+  LOCK_THREAD_LOADED,
+  GET_MY_REPLY_LOADED
 } from "../constants";
 import { call, put } from "redux-saga/effects";
 import axios from "axios";
@@ -51,6 +52,15 @@ function* handleGetReply(action) {
   try {
     const payload = yield call(getReplies, action);
     yield put({ type: GET_REPLY_LOADED, payload });
+  } catch (e) {
+    yield put({ type: "API_ERRORED", payload: e });
+  }
+}
+
+function* handleGetMyReplies(action) {
+  try {
+    const payload = yield call(getMyReplies, action);
+    yield put({ type: GET_MY_REPLY_LOADED, payload });
   } catch (e) {
     yield put({ type: "API_ERRORED", payload: e });
   }
@@ -103,6 +113,15 @@ const postReply = async action => {
 const getReplies = async action => {
   const { threadId, token } = action.payload;
   return await axios.get(`/replies/thread/${threadId}`, {
+    headers: {
+      Authorization: token
+    }
+  });
+};
+
+const getMyReplies = async action => {
+  const  token  = action.payload;
+  return await axios.get(`/replies`, {
     headers: {
       Authorization: token
     }
@@ -168,5 +187,6 @@ export {
   handleGetReply,
   handleDeleteThread,
   handleGetRepliesCount,
-  handleLockThread
+  handleLockThread,
+  handleGetMyReplies
 };

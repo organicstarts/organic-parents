@@ -1,4 +1,12 @@
-import { UPLOAD_AVATAR, DELETE_ACCOUNT, GET_USERS_COUNT, GET_USER } from "../constants";
+import {
+  UPLOAD_AVATAR,
+  DELETE_ACCOUNT,
+  GET_USERS_COUNT,
+  GET_USER,
+  BAN_USER,
+  CHANGE_ROLE,
+  UPDATE_USER
+} from "../constants";
 
 const uploadPhoto = state => ({
   type: UPLOAD_AVATAR,
@@ -17,7 +25,30 @@ const getUsersCount = token => ({
 
 const getUser = (userId, token) => ({
   type: GET_USER,
-  payload: {userId, token}
-})
+  payload: { userId, token }
+});
 
-export { uploadPhoto, deleteAccount, getUsersCount, getUser };
+const banUser = (userId, token) => ({
+  type: BAN_USER,
+  payload: { userId, token }
+});
+
+const changeRole = (userId, token) => ({
+  type: CHANGE_ROLE,
+  payload: { userId, token }
+});
+
+const updateUser =  (updateInfo, token) => ({
+  type: UPDATE_USER,
+  payload: {updateInfo, token} 
+});
+
+export {
+  uploadPhoto,
+  deleteAccount,
+  getUsersCount,
+  getUser,
+  banUser,
+  changeRole,
+  updateUser
+};

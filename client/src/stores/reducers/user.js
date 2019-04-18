@@ -3,7 +3,10 @@ import {
   AUTH_SIGNUP_LOADED,
   AUTH_LOGOUT_LOADED,
   GET_USERS_COUNT_LOADED,
-  GET_USER_LOADED
+  GET_USER_LOADED,
+  BAN_USER_LOADED,
+  CHANGE_ROLE_LOADED,
+  UPDATE_USER_LOADED
 } from "../constants";
 
 const INITIAL_STATE = {
@@ -11,11 +14,17 @@ const INITIAL_STATE = {
   lastName: "",
   email: "",
   role: "",
+  about: "",
   usersCount: 0,
   otherUser: {}
 };
 
 const setUser = (state, action) => {
+  if (action.payload.msg) {
+    return Object.assign({}, state, {
+      error: ""
+    });
+  }
   if (action.payload.errmsg) {
     return Object.assign({}, state, {
       error: ""
@@ -41,6 +50,22 @@ const setUserInfo = (state, action) => {
   return Object.assign({}, state, { otherUser: userInfo });
 };
 
+const setBanInfo = (state, action) => {
+  const banUser = { ...state.otherUser };
+  banUser.ban = action.payload.data.ban;
+  return Object.assign({}, state, {
+    otherUser: banUser
+  });
+};
+
+const setRoleInfo = (state, action) => {
+  const userRole = { ...state.otherUser };
+  userRole.role = action.payload.data.role;
+  return Object.assign({}, state, {
+    otherUser: userRole
+  });
+};
+
 function userReducer(state = INITIAL_STATE, action) {
   switch (action.type) {
     case AUTH_LOGIN_LOADED: {
@@ -59,6 +84,15 @@ function userReducer(state = INITIAL_STATE, action) {
     }
     case GET_USER_LOADED: {
       return setUserInfo(state, action);
+    }
+    case BAN_USER_LOADED: {
+      return setBanInfo(state, action);
+    }
+    case CHANGE_ROLE_LOADED: {
+      return setRoleInfo(state, action);
+    }
+    case UPDATE_USER_LOADED: {
+      return setUser(state, action);
     }
     case "API_ERRORED": {
       return { ...INITIAL_STATE };

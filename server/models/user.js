@@ -49,10 +49,18 @@ const userSchema = new mongoose.Schema(
         }
       }
     },
+    about: {
+      type: String,
+      trim: true
+    },
     role: {
       type: String,
       default: "user",
-      enum: ["user", "admin"]
+      enum: ["user", "admin", "moderator"]
+    },
+    ban: {
+      type: Boolean,
+      default: false
     },
     tokens: [
       {
@@ -78,7 +86,6 @@ userSchema.virtual("replies", {
 });
 userSchema.set("toObject", { virtuals: true });
 userSchema.set("toJSON", { virtuals: true });
-
 
 userSchema.methods.toJSON = function() {
   const user = this;

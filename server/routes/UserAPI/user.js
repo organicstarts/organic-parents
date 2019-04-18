@@ -25,6 +25,7 @@ router.post("/users/login", async (req, res) => {
       req.body.email,
       req.body.password
     );
+    if (user.ban) res.status(200).send({ msg: "Banned" });
     const token = await user.generateAuthToken();
     res.send({ user, token });
   } catch (e) {
@@ -48,7 +49,6 @@ router.post("/users/logout", auth, async (req, res) => {
 router.post("/users/logoutAll", auth, async (req, res) => {
   try {
     req.user.tokens = [];
-    console.log(req.user);
     await req.user.save();
     res.send();
   } catch (e) {
@@ -97,7 +97,8 @@ router.get("/user/all", async (req, res) => {
 ---------------------------------------------------------------------*/
 router.patch("/users/me", auth, async (req, res) => {
   const updates = Object.keys(req.body);
-  const allowedUpdates = ["firstName", "lastName", "email", "password", "age"];
+  console.log(updates)
+  const allowedUpdates = ["firstName", "lastName", "email", "password", "age", "about"];
   const isValidOperation = updates.every(update =>
     allowedUpdates.includes(update)
   );
@@ -109,7 +110,37 @@ router.patch("/users/me", auth, async (req, res) => {
   try {
     updates.forEach(update => (req.user[update] = req.body[update]));
     await req.user.save();
-    res.send(req.user);
+    res.send({user: req.user});
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
+router.patch("/users/ban", auth, async (req, res) => {
+  if (req.user.role !== "admin") return res.status(404).send();
+
+  try {
+    const user = await User.findById({ _id: req.body.id });
+    user.ban = !user.ban;
+    user.tokens = [];
+    await user.save();
+    res.send(user);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+router.patch("/users/role", auth, async (req, res) => {
+  if (req.user.role !== "admin") return res.status(404).send();
+
+  try {
+    const user = await User.findById({ _id: req.body.id });
+    if (user.role === "user") {
+      user.role = "moderator";
+    } else {
+      user.role = "user";
+    }
+    await user.save();
+    res.send(user);
   } catch (e) {
     res.status(400).send(e);
   }

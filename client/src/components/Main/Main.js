@@ -21,7 +21,7 @@ import {
   getRepliesCount,
   lockThread
 } from "../../stores/actions/post";
-import { getUsersCount } from "../../stores/actions/user";
+import { getUsersCount, getUser } from "../../stores/actions/user";
 import categories from "../../config-client/categories.json";
 
 class Main extends Component {
@@ -90,11 +90,20 @@ class Main extends Component {
                 </Grid.Column>
                 <Grid.Column width={13}>
                   <Grid.Row>
-                    <Header as="h1">{data.subject}</Header>
+                    <Header as="h1" onClick={() => this.openThread(data)}>
+                      {data.subject}
+                    </Header>
                   </Grid.Row>
 
                   <Grid.Row>
-                    {`By: ${data.ownerName} - Created on ${data.createdAt}`}
+                    <Link
+                      to="/userprofile"
+                      onClick={() =>
+                        this.props.getUser(data.owner, this.props.token)
+                      }
+                    >
+                      {`By: ${data.ownerName} - Created on ${data.createdAt}`}
+                    </Link>
                   </Grid.Row>
                   <Grid.Row style={{ marginTop: "5px" }}>
                     <div
@@ -207,7 +216,8 @@ export default withRouter(
       deleteThread,
       getRepliesCount,
       getUsersCount,
-      lockThread
+      lockThread,
+      getUser
     }
   )(Main)
 );

@@ -67,6 +67,13 @@ class Auth extends Component {
             Log-in to your account
           </Header>
           <Form onSubmit={this.login} size="large">
+            {this.props.error ? (
+              <Header as="h3" color="red">
+                {this.props.error}
+              </Header>
+            ) : (
+              ""
+            )}
             <Form.Input
               fluid
               icon="user"

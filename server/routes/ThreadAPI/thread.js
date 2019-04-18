@@ -66,7 +66,7 @@ router.get("/thread/:id", auth, async (req, res) => {
                             UPDATE REQUEST                            
 ---------------------------------------------------------------------*/
 router.patch("/thread/lock", auth, async (req, res) => {
-  if (!req.user.role === "admin") {
+  if (!req.user.role === "admin" || !req.user.role === "moderator") {
     res.status(400).send({ msg: "Not Authorized to lock/unlock thread" });
   }
 
@@ -87,7 +87,7 @@ router.patch("/thread/lock", auth, async (req, res) => {
                             DELETE REQUEST                            
 ---------------------------------------------------------------------*/
 router.delete("/thread/:id", auth, async (req, res) => {
-  if (!req.user.role === "admin") {
+  if (!req.user.role === "admin" || !req.user.role === "moderator") {
     res.status(400).send({ msg: "Not Authorized to Delete" });
   }
 

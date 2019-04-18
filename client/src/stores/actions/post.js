@@ -6,7 +6,8 @@ import {
   GET_REPLY,
   DELETE_THREAD,
   GET_REPLIES_COUNT,
-  LOCK_THREAD
+  LOCK_THREAD,
+  GET_MY_REPLY
 } from "../constants";
 
 const createNewThread = threadInfo => ({
@@ -34,6 +35,11 @@ const getReplies = replyInfo => ({
   payload: replyInfo
 });
 
+const getMyReplies = token => ({
+  type: GET_MY_REPLY,
+  payload: token
+});
+
 const deleteThread = (threadId, token, index) => ({
   type: DELETE_THREAD,
   payload: { threadId, token, index }
@@ -57,5 +63,6 @@ export {
   getReplies,
   deleteThread,
   getRepliesCount,
-  lockThread
+  lockThread,
+  getMyReplies
 };

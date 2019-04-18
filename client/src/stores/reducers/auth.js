@@ -19,6 +19,11 @@ const setLoading = (state, action) => {
 };
 
 const setUser = (state, action) => {
+  if (action.payload.msg === "Banned") {
+    return Object.assign({}, state, {
+      error: "***Your account is currently Banned!***"
+    });
+  }
   if (action.payload.errmsg) {
     return Object.assign({}, state, {
       error: "Email already exist! please input another email address."
@@ -27,7 +32,8 @@ const setUser = (state, action) => {
 
   return Object.assign({}, state, {
     token: action.payload.token,
-    loading: false
+    loading: false,
+    error: ""
   });
 };
 

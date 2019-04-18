@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
+import ReactHtmlParser from "react-html-parser";
+import moment from "moment";
 import {
   Segment,
   Grid,
@@ -10,18 +12,25 @@ import {
   Form,
   Button,
   Table,
-  Icon
+  Icon,
+  TextArea
 } from "semantic-ui-react";
-import { uploadPhoto, deleteAccount } from "../../stores/actions/user";
+import {
+  uploadPhoto,
+  deleteAccount,
+  updateUser
+} from "../../stores/actions/user";
+import { getMyReplies, setSingleThread } from "../../stores/actions/post";
 import { logout } from "../../stores/actions/auth";
 import blankImg from "../../images/image.png";
 
 class Profile extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       firstName: "",
       lastName: "",
+      about: this.props.about ? this.props.about : "",
       email: "",
       password: "",
       rePassword: "",
@@ -30,6 +39,11 @@ class Profile extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.enableEdit = this.enableEdit.bind(this);
     this.deleteAccount = this.deleteAccount.bind(this);
+    this.saveChanges = this.saveChanges.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.getMyReplies(this.props.token);
   }
 
   handleChange = e => this.setState({ [e.target.name]: e.target.value });
@@ -43,8 +57,8 @@ class Profile extends Component {
   }
 
   deleteAccount() {
-    this.props.deleteAccount(this.props.token)
-    this.props.logout(this.props.token)
+    this.props.deleteAccount(this.props.token);
+    this.props.logout(this.props.token);
   }
 
   fileHandler = e => {
@@ -54,6 +68,58 @@ class Profile extends Component {
     };
     this.props.uploadPhoto(fileInfo);
   };
+
+  saveChanges() {
+    const { firstName, lastName, password, about } = this.state;
+    const updateInfo = {};
+    if (firstName) updateInfo.firstName = firstName;
+    if (lastName) updateInfo.lastName = lastName;
+    if (password) updateInfo.password = password;
+    if (about !== this.props.about) updateInfo.about = about;
+
+    this.props.updateUser(updateInfo, this.props.token);
+  }
+
+  findThread(id) {
+    const { threads } = this.props;
+    let title = threads.filter(thread => thread._id === id);
+
+    if (!title[0]) {
+      title = "[deleted]";
+    } else {
+      title = title[0].subject;
+    }
+
+    return title;
+  }
+  openThread(id) {
+    const { threads } = this.props;
+    const data = threads.filter(thread => thread._id === id);
+    if (!data[0]) return false;
+    this.props.setSingleThread(data);
+    this.props.history.push("/threaddetail");
+  }
+
+  renderPost() {
+    const { myReplies } = this.props;
+    if (myReplies.length < 1) return "loading";
+    return myReplies.map(reply => {
+      return (
+        <Table.Row
+          key={reply.createdAt}
+          onClick={() => this.openThread(reply.thread)}
+        >
+          <Table.Cell collapsing>
+            <Icon name="folder" /> {this.findThread(reply.thread)}
+          </Table.Cell>
+          <Table.Cell>{ReactHtmlParser(reply.content)}</Table.Cell>
+          <Table.Cell collapsing textAlign="right">
+            {moment(reply.updatedAt).format("LLL")}
+          </Table.Cell>
+        </Table.Row>
+      );
+    });
+  }
 
   render() {
     const { enableEdit } = this.state;
@@ -94,7 +160,7 @@ class Profile extends Component {
                 />
                 <Button circular toggle icon="edit" onClick={this.enableEdit} />{" "}
                 <Header as="h4">{this.props.email}</Header>
-                <Form>
+                <Form onSubmit={this.saveChanges}>
                   <Form.Group inline>
                     <Form.Input
                       label="First Name:"
@@ -136,9 +202,9 @@ class Profile extends Component {
                         onChange={this.handleChange}
                       />
                       <Form.Input
-                        label="Re-Type Password:"
+                        label="Confirm Password:"
                         transparent
-                        placeholder="re-type new password"
+                        placeholder="confirm new password"
                         name="rePassword"
                         type="password"
                         value={this.state.rePassword}
@@ -160,30 +226,19 @@ class Profile extends Component {
               <Grid.Row style={{ marginBottom: "25px" }}>
                 <Grid.Column>
                   <Segment>
-                    <Header as="h3">About Me</Header>Lorem ipsum dolor sit amet,
-                    consectetur adipiscing elit. Vestibulum aliquam vulputate
-                    eleifend. Curabitur rhoncus eleifend auctor. Curabitur
-                    posuere, justo sit amet faucibus condimentum, nunc justo
-                    fringilla neque, quis dapibus felis felis ut quam. Nullam
-                    vitae interdum urna. Phasellus porttitor dapibus sapien, sit
-                    amet iaculis magna porttitor at. Proin imperdiet malesuada
-                    justo, ut faucibus eros imperdiet at. Nam ultrices convallis
-                    dui, sit amet suscipit sapien vehicula nec. Suspendisse eros
-                    tortor, ultrices sed leo et, pellentesque semper velit.
-                    Curabitur suscipit purus in ex euismod, nec varius elit
-                    bibendum. Lorem ipsum dolor sit amet, consectetur adipiscing
-                    elit. Phasellus at enim sed ex euismod fermentum. Sed sit
-                    amet elit vitae magna rutrum commodo consequat eget lorem.
-                    Nam molestie libero metus, in tincidunt odio semper commodo.
-                    Donec vehicula imperdiet risus. Quisque porta, enim at
-                    dictum semper, ante nibh iaculis velit, vitae convallis
-                    tortor libero sit amet nisi. Sed auctor ex eget ipsum
-                    pulvinar aliquam. Nam viverra, dolor id volutpat hendrerit,
-                    mi turpis iaculis eros, eu tincidunt mauris nulla vitae ex.
-                    Sed vel tempus ligula, ac malesuada tortor. Integer
-                    tincidunt ante quis tortor eleifend cursus. Suspendisse
-                    sodales odio sagittis, elementum odio quis, fringilla
-                    lectus. Mauris dapibus ac nibh quis ornare.
+                    {this.state.enableEdit ? (
+                      <TextArea
+                        style={{ width: "100%" }}
+                        name="about"
+                        value={this.state.about}
+                        onChange={this.handleChange}
+                      />
+                    ) : (
+                      <div>
+                        <Header as="h3">About Me</Header>
+                        {this.state.about}
+                      </div>
+                    )}
                   </Segment>
                 </Grid.Column>
               </Grid.Row>
@@ -198,35 +253,7 @@ class Profile extends Component {
                           </Table.Cell>
                         </Table.Row>
                       </Table.Header>
-                      <Table.Body>
-                        <Table.Row>
-                          <Table.Cell collapsing>
-                            <Icon name="folder" /> Lorem Ipsum
-                          </Table.Cell>
-                          <Table.Cell>post title name</Table.Cell>
-                          <Table.Cell collapsing textAlign="right">
-                            10 hours ago
-                          </Table.Cell>
-                        </Table.Row>
-                        <Table.Row>
-                          <Table.Cell collapsing>
-                            <Icon name="folder" /> Lorem Ipsum
-                          </Table.Cell>
-                          <Table.Cell>post title name</Table.Cell>
-                          <Table.Cell collapsing textAlign="right">
-                            10 hours ago
-                          </Table.Cell>
-                        </Table.Row>
-                        <Table.Row>
-                          <Table.Cell collapsing>
-                            <Icon name="folder" /> Lorem Ipsum
-                          </Table.Cell>
-                          <Table.Cell>post title name</Table.Cell>
-                          <Table.Cell collapsing textAlign="right">
-                            10 hours ago
-                          </Table.Cell>
-                        </Table.Row>
-                      </Table.Body>
+                      <Table.Body>{this.renderPost()}</Table.Body>
                     </Table>
                   </Segment>
                 </Grid.Column>
@@ -239,18 +266,21 @@ class Profile extends Component {
   }
 }
 
-function mapStateToProps({ authState, userState }) {
+function mapStateToProps({ authState, userState, postState }) {
   return {
     email: userState.email,
     firstName: userState.firstName,
     lastName: userState.lastName,
+    about: userState.about,
     id: userState._id,
-    token: authState.token
+    token: authState.token,
+    myReplies: postState.myReplies,
+    threads: postState.threads
   };
 }
 export default withRouter(
   connect(
     mapStateToProps,
-    { uploadPhoto, deleteAccount, logout }
+    { uploadPhoto, deleteAccount, logout, updateUser, getMyReplies, setSingleThread }
   )(Profile)
 );
