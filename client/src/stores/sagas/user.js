@@ -6,7 +6,8 @@ import {
   GET_USER_LOADED,
   BAN_USER_LOADED,
   CHANGE_ROLE_LOADED,
-  UPDATE_USER_LOADED
+  UPDATE_USER_LOADED,
+  GET_BANNED_USERS_LOADED
 } from "../constants";
 
 function* handleUpload(action) {
@@ -54,6 +55,16 @@ function* handleBanUser(action) {
     yield put({ type: "API_ERRORED", payload: e });
   }
 }
+
+function* handleGetBannedUser(action) {
+  try {
+    const payload = yield call(getBannedUsers, action.payload);
+    yield put({ type: GET_BANNED_USERS_LOADED, payload });
+  } catch (e) {
+    yield put({ type: "API_ERRORED", payload: e });
+  }
+}
+
 function* handleChangeRole(action) {
   try {
     const payload = yield call(changeRole, action.payload);
@@ -75,6 +86,15 @@ function* handleUpdateUser(action) {
 const getUsersCount = async action => {
   const token = action.payload;
   return await axios.get("/user/all", {
+    headers: {
+      Authorization: token
+    }
+  });
+};
+
+const getBannedUsers = async action => {
+  const token = action;
+  return await axios.get("/users/all/banned", {
     headers: {
       Authorization: token
     }
@@ -156,5 +176,6 @@ export {
   handleGetUser,
   handleBanUser,
   handleChangeRole,
-  handleUpdateUser
+  handleUpdateUser,
+  handleGetBannedUser
 };

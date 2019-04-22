@@ -63,6 +63,15 @@ router.get("/users/me", auth, async (req, res) => {
   res.send(req.user);
 });
 
+router.get("/users/all/banned", auth, async (req, res) => {
+  try {
+    const users = await User.find({ ban: true });
+    res.status(200).send(users);
+  } catch (e) {
+    res.status(500).send();
+  }
+});
+
 router.get("/users/:id", auth, async (req, res) => {
   const _id = req.params.id;
 
@@ -97,8 +106,14 @@ router.get("/user/all", async (req, res) => {
 ---------------------------------------------------------------------*/
 router.patch("/users/me", auth, async (req, res) => {
   const updates = Object.keys(req.body);
-  console.log(updates)
-  const allowedUpdates = ["firstName", "lastName", "email", "password", "age", "about"];
+  const allowedUpdates = [
+    "firstName",
+    "lastName",
+    "email",
+    "password",
+    "age",
+    "about"
+  ];
   const isValidOperation = updates.every(update =>
     allowedUpdates.includes(update)
   );
@@ -110,7 +125,7 @@ router.patch("/users/me", auth, async (req, res) => {
   try {
     updates.forEach(update => (req.user[update] = req.body[update]));
     await req.user.save();
-    res.send({user: req.user});
+    res.send({ user: req.user });
   } catch (e) {
     res.status(400).send(e);
   }
@@ -184,7 +199,7 @@ router.post(
   upload.single("avatar"),
   async (req, res) => {
     const buffer = await sharp(req.file.buffer)
-      .resize({ width: "auto", height: 450 })
+      .resize({ width: "auto", height: 250 })
       .png()
       .toBuffer();
     req.user.avatar = buffer;

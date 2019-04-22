@@ -23,6 +23,7 @@ import {
 } from "../../stores/actions/post";
 import { getUsersCount, getUser } from "../../stores/actions/user";
 import categories from "../../config-client/categories.json";
+import ReactHtmlParser from "react-html-parser";
 
 class Main extends Component {
   constructor() {
@@ -74,7 +75,7 @@ class Main extends Component {
     return this.props.threads
       .map((data, index) => {
         return (
-          <Segment color={data.color} key={data._id}>
+          <Segment color={data.color} key={data._id} style={{borderRadius: "15px"}}>
             <Grid>
               <Grid.Row columns={2}>
                 <Grid.Column width={3}>
@@ -94,16 +95,19 @@ class Main extends Component {
                       {data.subject}
                     </Header>
                   </Grid.Row>
-
                   <Grid.Row>
-                    <Link
-                      to="/userprofile"
-                      onClick={() =>
-                        this.props.getUser(data.owner, this.props.token)
-                      }
-                    >
-                      {`By: ${data.ownerName} - Created on ${data.createdAt}`}
-                    </Link>
+                    {data.ownerName !== "[deleted]" && data.ownerName ? (
+                      <Link
+                        to="/userprofile"
+                        onClick={() =>
+                          this.props.getUser(data.owner, this.props.token)
+                        }
+                      >
+                        {`By: ${data.ownerName} - Created on ${data.createdAt}`}
+                      </Link>
+                    ) : (
+                      `By: ${data.ownerName} - Created on ${data.createdAt}`
+                    )}
                   </Grid.Row>
                   <Grid.Row style={{ marginTop: "5px" }}>
                     <div
@@ -118,14 +122,22 @@ class Main extends Component {
                     />
                     {data.categories}
                   </Grid.Row>
+                  <Grid.Row
+                    className="fade-up"
+                    style={{
+                      maxHeight: "200px",
+                      wordBreak: "break-all",
+                      overflow: "hidden"
+                    }}
+                  >
+                    {ReactHtmlParser(data.content)}
+                  </Grid.Row>
                   <Grid.Column>
                     <Icon
                       link
                       name="comment alternate outline"
                       onClick={() => this.openThread(data)}
-                    >
-                      {data.repliesCount}
-                    </Icon>
+                    /> {data.repliesCount} Comments
                   </Grid.Column>
                   <Grid.Column>
                     {this.props.role === "admin" ? (
@@ -174,7 +186,8 @@ class Main extends Component {
         <Grid.Row columns={2}>
           <Grid.Column width={10}>{this.renderThreads()}</Grid.Column>
           <Grid.Column width={4}>
-            <Link to={"thread"}>new thread</Link>
+            <Link to={"thread"}>new thread</Link> <br />
+            <Link to={"banlist"}>Ban List</Link>
             <h4> Statistics</h4>
             <Segment>
               <p>{this.props.userCount} MEMBERS</p>

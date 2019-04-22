@@ -37,12 +37,13 @@ class UserProfile extends Component {
     const { threads } = this.props;
     const data = threads.filter(thread => thread._id === id);
     if (!data[0]) return false;
-    this.props.setSingleThread(data);
+    this.props.setSingleThread(data[0]);
     this.props.history.push("/threaddetail");
   }
 
   renderPost() {
     const { user } = this.props;
+    if (!user.replies) return <div>""</div>;
     return user.replies.map(reply => {
       return (
         <Table.Row

@@ -6,7 +6,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f2edf4
+  background-color: #f2edf4;
 }
 
 code {
@@ -16,9 +16,22 @@ code {
 
 .hover:hover {
   background: #bcb9bd;
-
 }
 
 .ql-editor {
   min-height: 15em;
+}
+
+.fade-up:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 15px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(255, 255, 255, 1) 100%
+  );
 }

@@ -5,7 +5,8 @@ import {
   GET_USER,
   BAN_USER,
   CHANGE_ROLE,
-  UPDATE_USER
+  UPDATE_USER, 
+  GET_BANNED_USERS
 } from "../constants";
 
 const uploadPhoto = state => ({
@@ -20,6 +21,11 @@ const deleteAccount = token => ({
 
 const getUsersCount = token => ({
   type: GET_USERS_COUNT,
+  payload: token
+});
+
+const getBannedUsers = token => ({
+  type: GET_BANNED_USERS,
   payload: token
 });
 
@@ -50,5 +56,6 @@ export {
   getUser,
   banUser,
   changeRole,
-  updateUser
+  updateUser,
+  getBannedUsers
 };

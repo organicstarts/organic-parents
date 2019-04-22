@@ -46,6 +46,7 @@ class ThreadDetail extends Component {
       token: this.props.token,
       threadId: this.props.thread._id
     };
+    console.log("hi", replyInfo);
     this.props.getReplies(replyInfo);
   }
   showReplies() {
@@ -60,7 +61,20 @@ class ThreadDetail extends Component {
             src={`http://localhost:3001/users/${reply.owner}/avatar`}
           />
           <Comment.Content>
-            <Comment.Author as="a">{reply.ownerName}</Comment.Author>
+            <Comment.Author as="a">
+              {reply.ownerName !== "[deleted]" && reply.ownerName ? (
+                <Link
+                  to="/userprofile"
+                  onClick={() =>
+                    this.props.getUser(reply.owner, this.props.token)
+                  }
+                >
+                  {reply.ownerName}
+                </Link>
+              ) : (
+                reply.ownerName
+              )}
+            </Comment.Author>
             <Comment.Metadata>
               <div>{moment(reply.updatedAt).format("LLL")}</div>
             </Comment.Metadata>
@@ -93,14 +107,18 @@ class ThreadDetail extends Component {
               />
             </Grid.Column>
             <Grid.Column verticalAlign="middle">
-              <Link
-                to="/userprofile"
-                onClick={() =>
-                  this.props.getUser(thread.owner, this.props.token)
-                }
-              >
-                {thread.ownerName}{" "}
-              </Link>
+              {thread.ownerName !== "[deleted]" && thread.ownerName ? (
+                <Link
+                  to="/userprofile"
+                  onClick={() =>
+                    this.props.getUser(thread.owner, this.props.token)
+                  }
+                >
+                  {thread.ownerName}
+                </Link>
+              ) : (
+                thread.ownerName
+              )}
               {thread.updatedAt}
             </Grid.Column>
           </Grid.Row>
