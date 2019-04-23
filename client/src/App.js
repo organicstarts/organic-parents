@@ -42,14 +42,32 @@ class App extends Component {
           <Menu.Item>
             <Form>
               <Form.Input
-                style={{width: "150em"}}
+                fluid
+                style={{ minWidth: "138em" }}
                 icon="search"
                 iconPosition="left"
                 placeholder="Search Organic Parents"
               />
             </Form>
           </Menu.Item>
-          <Menu.Item position="right" fitted="horizontally"  style={{ marginRight: "25px"}}>
+          <Menu.Item
+            position="right"
+            fitted="horizontally"
+            style={{ marginRight: "25px" }}
+          >
+            {this.props.role !== "user" && (
+              <Button
+                as={Link}
+                to="/banlist"
+                circular
+                icon="eraser"
+                color="teal"
+                size="mini"
+                label="Ban List"
+                style={{ marginRight: "25px", height: "25px" }}
+              />
+            )}
+
             <Button
               as={Link}
               to="/profile"
@@ -77,9 +95,10 @@ class App extends Component {
   }
 }
 
-function mapStateToProps({ authState }) {
+function mapStateToProps({ authState, userState }) {
   return {
-    token: authState.token
+    token: authState.token,
+    role: userState.role
   };
 }
 

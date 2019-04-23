@@ -6,10 +6,12 @@ const auth = require("../../middleware/auth");
                             POST REQUEST                            
 ---------------------------------------------------------------------*/
 router.post("/thread", auth, async (req, res) => {
+  let mapKey = `thumbVote.${req.user._id}`;
   const thread = new Thread({
     ...req.body,
     ownerName: `${req.user.firstName} ${req.user.lastName}`,
-    owner: req.user._id
+    owner: req.user._id,
+    [mapKey]: 0
   });
 
   try {
@@ -76,6 +78,37 @@ router.patch("/thread/lock", auth, async (req, res) => {
       return res.status(404).send();
     }
     thread.lock = !thread.lock;
+    await thread.save();
+    res.status(200).send(thread);
+  } catch (e) {
+    res.status(500).send();
+  }
+});
+router.patch("/thread/vote", auth, async (req, res) => {
+  let number = req.body.vote;
+  let mapKey = req.user._id.toString();
+  try {
+    const thread = await Thread.findOne({ _id: req.body._id });
+    if (!thread) {
+      return res.status(404).send();
+    }
+    if (thread.thumbVote.get(mapKey)) {
+      if (number === thread.thumbVote.get(mapKey)) {
+        thread.thumbVote.set(mapKey, 0);
+        if (number === 1) thread.points -= 1;
+        if (number === 2) thread.points += 1;
+      } else if (number === 1) {
+        thread.thumbVote.set(mapKey, number);
+        thread.points += 1;
+      } else if (number === 2) {
+        thread.thumbVote.set(mapKey, number);
+        thread.points -= 1;
+      }
+    } else {
+      thread.thumbVote.set(mapKey, number);
+      if (number === 1) thread.points += 1;
+      if (number === 2) thread.points -= 1;
+    }
     await thread.save();
     res.status(200).send(thread);
   } catch (e) {

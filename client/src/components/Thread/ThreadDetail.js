@@ -19,10 +19,11 @@ import "react-quill/dist/quill.snow.css";
 import moment from "moment";
 
 class ThreadDetail extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      content: ""
+      content: "",
+      // toggle: this.props.thread.replies.map(reply => false)
     };
     this.handleChange = this.handleChange.bind(this);
     this.submitReply = this.submitReply.bind(this);
@@ -46,7 +47,6 @@ class ThreadDetail extends Component {
       token: this.props.token,
       threadId: this.props.thread._id
     };
-    console.log("hi", replyInfo);
     this.props.getReplies(replyInfo);
   }
   showReplies() {
@@ -59,9 +59,13 @@ class ThreadDetail extends Component {
         <Comment key={reply._id}>
           <Comment.Avatar
             src={`http://localhost:3001/users/${reply.owner}/avatar`}
+            onError={e => {
+              e.target.onerror = null;
+              e.target.src = defaultImg;
+            }}
           />
           <Comment.Content>
-            <Comment.Author as="a">
+            <Comment.Author>
               {reply.ownerName !== "[deleted]" && reply.ownerName ? (
                 <Link
                   to="/userprofile"
@@ -80,7 +84,7 @@ class ThreadDetail extends Component {
             </Comment.Metadata>
             <Comment.Text>{ReactHtmlParser(reply.content)}</Comment.Text>
             <Comment.Actions>
-              <Comment.Action>Reply</Comment.Action>
+              {/* <Comment.Action>Reply</Comment.Action> */}
             </Comment.Actions>
           </Comment.Content>
         </Comment>
@@ -90,6 +94,7 @@ class ThreadDetail extends Component {
 
   render() {
     const { thread } = this.props;
+    console.log(this.state.toggle);
     return (
       <Segment>
         <Header as="h1">{thread.subject}</Header>
@@ -136,6 +141,44 @@ class ThreadDetail extends Component {
           onChange={this.handleChange}
           theme="snow"
           placeholder="What are your thoughts..."
+          modules={{
+            toolbar: [
+              [{ header: [1, 2, false] }],
+              ["bold", "italic", "underline", "strike", "blockquote"],
+              [
+                { list: "ordered" },
+                { list: "bullet" },
+                { indent: "-1" },
+                { indent: "+1" }
+              ],
+              ["link", "image"],
+              ["clean"]
+            ],
+            imageResize: {
+              handleStyles: {
+                backgroundColor: "black",
+                border: "none",
+                color: "white"
+              },
+              modules: ["Resize", "DisplaySize", "Toolbar"]
+            }
+          }}
+          formats={[
+            "header",
+            "font",
+            "size",
+            "bold",
+            "italic",
+            "underline",
+            "strike",
+            "blockquote",
+            "list",
+            "bullet",
+            "indent",
+            "link",
+            "image",
+            "video"
+          ]}
         />
 
         <Button

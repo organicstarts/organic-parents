@@ -6,7 +6,8 @@ import {
   DELETE_THREAD,
   GET_REPLIES_COUNT_LOADED,
   LOCK_THREAD_LOADED,
-  GET_MY_REPLY_LOADED
+  GET_MY_REPLY_LOADED,
+  VOTE_THREAD_LOADED
 } from "../constants";
 import categories from "../../config-client/categories.json";
 import moment from "moment";
@@ -16,7 +17,7 @@ const INITIAL_STATE = {
   thread: [],
   threadCount: 0,
   repliesCount: 0,
-  myReplies:[]
+  myReplies: []
 };
 
 const getCategoryColor = category => {
@@ -37,9 +38,26 @@ const setThread = (state, action) => {
   action.payload.data.threads.map(data => {
     data.color = getCategoryColor(data);
     data.updatedAt = moment(data.updatedAt).format("LLL");
-    data.createdAt = moment(data.createdAt).format("LLL");
-  });
+    let now = moment();
+    let minutes = now.diff(data.createdAt, "minutes");
+    let hours = now.diff(data.createdAt, "hours");
+    let days = now.diff(data.createdAt, "days");
+    let weeks = now.diff(data.createdAt, "weeks");
+    let result = "";
 
+    if (weeks) {
+      result += weeks + (weeks === 1 ? " week ago" : " weeks ago");
+      days = days % 7;
+    } else if (minutes < 60) {
+      result += minutes + (minutes === 1 ? " minute ago" : " minutes ago");
+    } else if (hours < 24) {
+      result += hours + (hours === 1 ? " hour ago" : " hours ago");
+    } else if (days || weeks === 0) {
+      result += days + (days === 1 ? " day ago" : " days ago");
+    }
+
+    data.createdAt = result;
+  });
   return Object.assign({}, state, {
     threads: action.payload.data.threads,
     threadCount: action.payload.data.count
@@ -77,6 +95,20 @@ const setLockThread = (state, action) => {
   });
 };
 
+const setVoteThread = (state, action) => {
+  const tempThreads = [...state.threads];
+  tempThreads.map(thread => {
+    if (thread._id === action.payload.data._id) {
+      thread.points = action.payload.data.points;
+      thread.thumbVote = action.payload.data.thumbVote;
+    }
+  });
+
+  return Object.assign({}, state, {
+    threads: tempThreads
+  });
+};
+
 function postReducer(state = INITIAL_STATE, action) {
   switch (action.type) {
     case GET_THREADS_LOADED: {
@@ -104,12 +136,15 @@ function postReducer(state = INITIAL_STATE, action) {
       });
     }
     case GET_MY_REPLY_LOADED: {
-      return Object.assign({},state, {
+      return Object.assign({}, state, {
         myReplies: action.payload.data
-      })
+      });
     }
     case LOCK_THREAD_LOADED: {
       return setLockThread(state, action);
+    }
+    case VOTE_THREAD_LOADED: {
+      return setVoteThread(state, action);
     }
     default:
       return state;

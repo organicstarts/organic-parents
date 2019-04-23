@@ -25,6 +25,15 @@ const threadSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
+    points: {
+      type: Number,
+      default: 0
+    },
+    thumbVote: {
+      type: Map,
+      of: Number,
+      default: {}
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

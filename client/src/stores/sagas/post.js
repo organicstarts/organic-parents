@@ -6,7 +6,8 @@ import {
   DELETE_THREAD_LOADED,
   GET_REPLIES_COUNT_LOADED,
   LOCK_THREAD_LOADED,
-  GET_MY_REPLY_LOADED
+  GET_MY_REPLY_LOADED,
+  VOTE_THREAD_LOADED
 } from "../constants";
 import { call, put } from "redux-saga/effects";
 import axios from "axios";
@@ -83,6 +84,27 @@ function* handleLockThread(action) {
     yield put({ type: "API_ERRORED", payload: e });
   }
 }
+function* handlevoteThread(action) {
+  try {
+    const payload = yield call(voteThread, action);
+    yield put({ type: VOTE_THREAD_LOADED, payload });
+  } catch (e) {
+    yield put({ type: "API_ERRORED", payload: e });
+  }
+}
+
+const voteThread = async action => {
+  const { vote, threadId, token } = action.payload;
+  return await axios.patch(
+    "/thread/vote",
+    { _id: threadId, vote },
+    {
+      headers: {
+        Authorization: token
+      }
+    }
+  )
+};
 
 const createThread = async action => {
   const { subject, content, category, token } = action.payload;
@@ -188,5 +210,6 @@ export {
   handleDeleteThread,
   handleGetRepliesCount,
   handleLockThread,
-  handleGetMyReplies
+  handleGetMyReplies,
+  handlevoteThread
 };
