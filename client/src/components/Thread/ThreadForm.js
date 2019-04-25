@@ -147,19 +147,6 @@ class ThreadForm extends Component {
             </Segment>
             <Segment>
               <Header as="h4">2019 · Organic Parents</Header>
-              <Grid>
-                <Grid.Row columns={3}>
-                  <Grid.Column width={8}>Send Feedback</Grid.Column>
-                  <Grid.Column width={3}>Report </Grid.Column>
-                  <Grid.Column width={3}>Bugs </Grid.Column>
-                </Grid.Row>
-                <Grid.Row columns={4}>
-                  <Grid.Column>About</Grid.Column>
-                  <Grid.Column>Media</Grid.Column>
-                  <Grid.Column>Terms</Grid.Column>
-                  <Grid.Column>Privacy</Grid.Column>
-                </Grid.Row>
-              </Grid>
             </Segment>
           </Grid.Column>
         </Grid.Row>
@@ -168,9 +155,12 @@ class ThreadForm extends Component {
   }
 }
 
-function mapStateToProps({ authState }) {
+function mapStateToProps({ authState, userState, postState }) {
   return {
-    token: authState.token
+    token: authState.token,
+    userCount: userState.usersCount,
+    threadCount: postState.threadCount,
+    repliesCount: postState.repliesCount
   };
 }
 

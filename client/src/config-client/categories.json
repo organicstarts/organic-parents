@@ -1,20 +1,38 @@
 [
   {
     "key": "1",
-    "text": "General",
-    "value": "general",
-    "color": "olive"
+    "text": "Formula",
+    "value": "formula",
+    "color": "red"
   },
   {
     "key": "2",
-    "text": "Formula",
-    "value": "formula",
-    "color": "teal"
+    "text": "General",
+    "value": "general",
+    "color": "orange"
   },
   {
     "key": "3",
+    "text": "Pregnancy",
+    "value": "pregnancy",
+    "color": "yellow"
+  },
+  {
+    "key": "4",
+    "text": "Parenting",
+    "value": "parenting",
+    "color": "green"
+  },
+  {
+    "key": "5",
+    "text": "Question",
+    "value": "question",
+    "color": "blue"
+  },
+  {
+    "key": "6",
     "text": "Recomendation",
     "value": "recomendation",
-    "color": "pink"
+    "color": "purple"
   }
 ]

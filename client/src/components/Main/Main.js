@@ -10,7 +10,8 @@ import {
   Form,
   Button,
   Table,
-  Icon
+  Icon,
+  Label
 } from "semantic-ui-react";
 import defaultImg from "../../images/image.png";
 import { ClipLoader } from "react-spinners";
@@ -38,7 +39,7 @@ class Main extends Component {
   }
   componentDidMount() {
     this.props.getThreads(this.props.token);
-    // this.props.getRepliesCount(this.props.token);
+    this.props.getRepliesCount(this.props.token);
     this.props.getUsersCount(this.props.token);
   }
 
@@ -83,49 +84,55 @@ class Main extends Component {
           >
             <Grid>
               <Grid.Row columns={2}>
-                <Grid.Column width={3} textAlign="center">
+                <Grid.Column width={2} textAlign="center">
                   <Image
                     src={`http://localhost:3001/users/${data.owner}/avatar`}
                     onError={e => {
                       e.target.onerror = null;
                       e.target.src = defaultImg;
                     }}
+                    onClick={() =>
+                      this.props.getUser(data.owner, this.props.token)
+                    }
+                    href="/userprofile"
                     circular
-                    size="small"
+                    size="tiny"
+                    style={{ minHeight: 48, minWidth: 48 }}
                   />
-                  <div style={{ margin: "15px" }}>
+
+                  <div style={{ marginTop: "10px" }}>
                     <Button
                       circular
+                      size="tiny"
                       basic
+                      compact
                       icon="thumbs up"
                       color={
-                        data.thumbVote[this.props.id] === 1
-                          ? "orange"
-                          : "grey"
+                        data.thumbVote[this.props.id] === 1 ? "orange" : "grey"
                       }
                       onClick={() =>
                         this.props.voteThread(this.props.token, data._id, 1)
                       }
                     />
-                    <p style={{ marginTop: "15px" }}>{data.points}</p>
                     <Button
                       circular
+                      size="tiny"
                       basic
+                      compact
                       icon="thumbs down"
                       color={
-                        data.thumbVote[this.props.id] === 2
-                          ? "purple"
-                          : "grey"
+                        data.thumbVote[this.props.id] === 2 ? "purple" : "grey"
                       }
                       onClick={() =>
                         this.props.voteThread(this.props.token, data._id, 2)
                       }
                     />
+                    <Label basic content={data.points} />
                   </div>
                 </Grid.Column>
-                <Grid.Column width={13} stretched style={{ marginTop: "10px" }}>
+                <Grid.Column width={14} stretched style={{ marginTop: "10px" }}>
                   <Grid.Row>
-                    <div
+                    <span
                       style={{
                         backgroundColor: data.color,
                         height: "15px",
@@ -135,18 +142,19 @@ class Main extends Component {
                         margin: "2.5px 5px"
                       }}
                     />
-                    {data.categories}
+                    {data.categories} {` Posted by `}
                     {data.ownerName !== "[deleted]" && data.ownerName ? (
                       <Link
                         to="/userprofile"
                         onClick={() =>
                           this.props.getUser(data.owner, this.props.token)
                         }
+                        style={{ zIndex: 999 }}
                       >
-                        {` Posted by ${data.ownerName} - ${data.createdAt}`}
+                        <span> {data.ownerName} </span>
                       </Link>
                     ) : (
-                      ` Posted by ${data.ownerName} - ${data.createdAt}`
+                      data.ownerName
                     )}
                     {data.lock ? (
                       <div style={{ textAlign: "center", float: "right" }}>
@@ -155,13 +163,10 @@ class Main extends Component {
                     ) : (
                       ""
                     )}
+                    {` - ${data.createdAt}`}
                   </Grid.Row>
                   <Grid.Row>
-                    <Header
-                      style={{ marginTop: "10px" }}
-                      as="h1"
-                      onClick={() => this.openThread(data)}
-                    >
+                    <Header as="h1" onClick={() => this.openThread(data)}>
                       {data.subject}
                     </Header>
                   </Grid.Row>
@@ -174,22 +179,24 @@ class Main extends Component {
                       wordBreak: "break-all",
                       overflow: "hidden"
                     }}
+                    onClick={() => this.openThread(data)}
                   >
-                    <div style={{ textAlign: "justify" }}>
+                    <div style={{ marginTop: "10px", textAlign: "justify" }}>
                       {ReactHtmlParser(data.content)}
                     </div>
                   </Grid.Row>
-                  <Grid columns={2}>
-                    <Grid.Column
-                      width={4}
-                      onClick={() => this.openThread(data)}
-                    >
-                      <Icon link name="comment alternate outline" />
-                      {data.repliesCount} Comments
-                    </Grid.Column>
-                    <Grid.Column>
+                  <Grid>
+                    <Grid.Column style={{ marginTop: 25, color: "#999999" }} width={16}>
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() => this.openThread(data)}
+                      >
+                        <Icon link name="comment alternate outline" />
+                        {data.repliesCount}{" "}
+                        {data.repliesCount === 1 ? "Comment" : "Comments"}
+                      </span>
                       {this.props.role === "admin" ? (
-                        <div>
+                        <span style={{ cursor: "pointer" }}>
                           <span
                             onClick={() =>
                               this.props.deleteThread(
@@ -199,6 +206,7 @@ class Main extends Component {
                               )
                             }
                           >
+                            {" "}
                             <Icon link name="trash alternate outline" />
                             {`Delete `}
                           </span>
@@ -210,7 +218,7 @@ class Main extends Component {
                             <Icon link name="lock" />
                             Lock
                           </span>
-                        </div>
+                        </span>
                       ) : (
                         ""
                       )}
@@ -228,8 +236,10 @@ class Main extends Component {
     return (
       <Grid>
         <Grid.Row columns={2}>
-          <Grid.Column width={12}>{this.renderThreads()}</Grid.Column>
-          <Grid.Column width={4}>
+          <Grid.Column computer={12} mobile={16}>
+            {this.renderThreads()}
+          </Grid.Column>
+          <Grid.Column width={4} only="large screen">
             <h4> Statistics</h4>
             <Segment>
               <p>{this.props.userCount} MEMBERS</p>

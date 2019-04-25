@@ -199,7 +199,7 @@ const getRepliesCount = async action => {
     headers: {
       Authorization: token
     }
-  });
+  })
 };
 
 export {

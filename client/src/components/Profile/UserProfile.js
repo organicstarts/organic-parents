@@ -89,28 +89,8 @@ class UserProfile extends Component {
               <span>Joined in {moment(user.createdAt).format("LL")}</span>
             </Card.Meta>
             <Card.Description>
-              <Header as="h3">About Me</Header>Lorem ipsum dolor sit amet,
-              consectetur adipiscing elit. Vestibulum aliquam vulputate
-              eleifend. Curabitur rhoncus eleifend auctor. Curabitur posuere,
-              justo sit amet faucibus condimentum, nunc justo fringilla neque,
-              quis dapibus felis felis ut quam. Nullam vitae interdum urna.
-              Phasellus porttitor dapibus sapien, sit amet iaculis magna
-              porttitor at. Proin imperdiet malesuada justo, ut faucibus eros
-              imperdiet at. Nam ultrices convallis dui, sit amet suscipit sapien
-              vehicula nec. Suspendisse eros tortor, ultrices sed leo et,
-              pellentesque semper velit. Curabitur suscipit purus in ex euismod,
-              nec varius elit bibendum. Lorem ipsum dolor sit amet, consectetur
-              adipiscing elit. Phasellus at enim sed ex euismod fermentum. Sed
-              sit amet elit vitae magna rutrum commodo consequat eget lorem. Nam
-              molestie libero metus, in tincidunt odio semper commodo. Donec
-              vehicula imperdiet risus. Quisque porta, enim at dictum semper,
-              ante nibh iaculis velit, vitae convallis tortor libero sit amet
-              nisi. Sed auctor ex eget ipsum pulvinar aliquam. Nam viverra,
-              dolor id volutpat hendrerit, mi turpis iaculis eros, eu tincidunt
-              mauris nulla vitae ex. Sed vel tempus ligula, ac malesuada tortor.
-              Integer tincidunt ante quis tortor eleifend cursus. Suspendisse
-              sodales odio sagittis, elementum odio quis, fringilla lectus.
-              Mauris dapibus ac nibh quis ornare.
+              <Header as="h3">About Me</Header>
+              <p>{user.about}</p>
             </Card.Description>
           </Card.Content>
           {role === "admin" && (
@@ -155,7 +135,7 @@ function mapStateToProps({ authState, userState, postState }) {
     token: authState.token,
     user: userState.otherUser,
     role: userState.role,
-    threads: postState.threads
+    threads: postState.threads,
   };
 }
 

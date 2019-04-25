@@ -88,11 +88,6 @@ router.get("/replies/thread/:id", auth, async (req, res) => {
 router.get("/replies/all", auth, async (req, res) => {
   try {
     const replies = await Reply.find().countDocuments();
-
-    if (!replies) {
-      return res.status(404).send();
-    }
-
     res.send({ replies });
   } catch (e) {
     res.status(500).send();

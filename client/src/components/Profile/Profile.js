@@ -109,11 +109,21 @@ class Profile extends Component {
           key={reply.createdAt}
           onClick={() => this.openThread(reply.thread)}
         >
-          <Table.Cell collapsing>
+          <Table.Cell>
             <Icon name="folder" /> {this.findThread(reply.thread)}
           </Table.Cell>
-          <Table.Cell>{ReactHtmlParser(reply.content)}</Table.Cell>
-          <Table.Cell collapsing textAlign="right">
+          <Table.Cell>
+            <div
+              style={{
+                minHeight: "50px",
+                maxHeight: "100px",
+                overflow: "hidden"
+              }}
+            >
+              {ReactHtmlParser(reply.content)}
+            </div>
+          </Table.Cell>
+          <Table.Cell textAlign="right">
             {moment(reply.updatedAt).format("LLL")}
           </Table.Cell>
         </Table.Row>
@@ -125,7 +135,7 @@ class Profile extends Component {
     const { enableEdit } = this.state;
     return (
       <Container>
-        <Grid centered>
+        <Grid centered stackable>
           <Grid.Row divided columns={"equal"}>
             <Grid.Column>
               <Segment>
@@ -281,6 +291,13 @@ function mapStateToProps({ authState, userState, postState }) {
 export default withRouter(
   connect(
     mapStateToProps,
-    { uploadPhoto, deleteAccount, logout, updateUser, getMyReplies, setSingleThread }
+    {
+      uploadPhoto,
+      deleteAccount,
+      logout,
+      updateUser,
+      getMyReplies,
+      setSingleThread
+    }
   )(Profile)
 );

@@ -97,15 +97,20 @@ const setLockThread = (state, action) => {
 
 const setVoteThread = (state, action) => {
   const tempThreads = [...state.threads];
+  const singleThread = { ...state.thread };
   tempThreads.map(thread => {
     if (thread._id === action.payload.data._id) {
       thread.points = action.payload.data.points;
       thread.thumbVote = action.payload.data.thumbVote;
     }
   });
-
+  if(singleThread._id === action.payload.data._id) {
+    singleThread.points = action.payload.data.points;
+    singleThread.thumbVote = action.payload.data.thumbVote;
+  }
   return Object.assign({}, state, {
-    threads: tempThreads
+    threads: tempThreads,
+    thread: singleThread
   });
 };
 
@@ -145,6 +150,9 @@ function postReducer(state = INITIAL_STATE, action) {
     }
     case VOTE_THREAD_LOADED: {
       return setVoteThread(state, action);
+    }
+    case "API_ERRORED": {
+      return { ...INITIAL_STATE };
     }
     default:
       return state;

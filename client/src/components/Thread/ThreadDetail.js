@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import {
-  Form,
+  Icon,
   Button,
   Grid,
   Image,
@@ -10,7 +10,7 @@ import {
   Segment,
   Comment
 } from "semantic-ui-react";
-import { postReply, getReplies } from "../../stores/actions/post";
+import { postReply, getReplies, voteThread } from "../../stores/actions/post";
 import { getUser } from "../../stores/actions/user";
 import defaultImg from "../../images/image.png";
 import ReactHtmlParser from "react-html-parser";
@@ -22,7 +22,7 @@ class ThreadDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      content: "",
+      content: ""
       // toggle: this.props.thread.replies.map(reply => false)
     };
     this.handleChange = this.handleChange.bind(this);
@@ -94,44 +94,117 @@ class ThreadDetail extends Component {
 
   render() {
     const { thread } = this.props;
-    console.log(this.state.toggle);
     return (
       <Segment>
-        <Header as="h1">{thread.subject}</Header>
-        <Grid style={{ margin: "25px 0" }}>
+        {thread.lock && (
+          <div
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              top: "0",
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage:
+                "linear-gradient(0deg, rgba(2,0,36,.25) 0%, rgba(9,9,121,.25) 35%, rgba(0,212,255,.25) 100%)",
+              zIndex: 2
+            }}
+          />
+        )}
+        <Grid style={{ margin: "25px 0" }} stackable>
           <Grid.Row columns={2}>
-            <Grid.Column width={2}>
+            <Grid.Column width={2} textAlign="center">
               <Image
                 src={`http://localhost:3001/users/${thread.owner}/avatar`}
                 onError={e => {
                   e.target.onerror = null;
                   e.target.src = defaultImg;
                 }}
+                onClick={() =>
+                  this.props.getUser(thread.owner, this.props.token)
+                }
+                href="/userprofile"
+                centered
                 circular
-                size="medium"
+                size="tiny"
               />
-            </Grid.Column>
-            <Grid.Column verticalAlign="middle">
-              {thread.ownerName !== "[deleted]" && thread.ownerName ? (
-                <Link
-                  to="/userprofile"
-                  onClick={() =>
-                    this.props.getUser(thread.owner, this.props.token)
+              <div style={{ marginTop: "10px" }}>
+                <Button
+                  circular
+                  size="mini"
+                  basic
+                  compact
+                  icon="thumbs up"
+                  color={
+                    thread.thumbVote[this.props.id] === 1 ? "orange" : "grey"
                   }
-                >
-                  {thread.ownerName}
-                </Link>
-              ) : (
-                thread.ownerName
-              )}
-              {thread.updatedAt}
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column>
-              <div style={{ wordBreak: "break-all" }}>
-                {ReactHtmlParser(thread.content)}
+                  onClick={() =>
+                    this.props.voteThread(this.props.token, thread._id, 1)
+                  }
+                />
+                <span style={{ margin: "10px" }}>{thread.points}</span>
+                <Button
+                  circular
+                  size="mini"
+                  basic
+                  compact
+                  icon="thumbs down"
+                  color={
+                    thread.thumbVote[this.props.id] === 2 ? "purple" : "grey"
+                  }
+                  onClick={() =>
+                    this.props.voteThread(this.props.token, thread._id, 2)
+                  }
+                />
               </div>
+            </Grid.Column>
+            <Grid.Column width={13} stretched>
+              <Grid.Row>
+                <span
+                  style={{
+                    backgroundColor: thread.color,
+                    height: "15px",
+                    width: "15px",
+                    borderRadius: "50%",
+                    float: "left",
+                    margin: "2.5px 5px"
+                  }}
+                />
+                {thread.categories} {` Posted by `}
+                {thread.ownerName !== "[deleted]" && thread.ownerName ? (
+                  <Link
+                    to="/userprofile"
+                    onClick={() =>
+                      this.props.getUser(thread.owner, this.props.token)
+                    }
+                  >
+                    {thread.ownerName}
+                  </Link>
+                ) : (
+                  thread.ownerName
+                )}
+                {` - ${thread.createdAt}`}
+                {thread.lock ? (
+                  <div
+                    style={{ textAlign: "center", float: "right", zIndex: 5 }}
+                  >
+                    <Icon name="lock" fitted size="big" />{" "}
+                  </div>
+                ) : (
+                  ""
+                )}
+              </Grid.Row>
+              <Grid.Row>
+                <Header as="h1">{thread.subject}</Header>
+              </Grid.Row>
+              <Grid.Row>
+                <Grid.Column>
+                  <div style={{ marginTop: "10px", wordBreak: "break-all" }}>
+                    {ReactHtmlParser(thread.content)}
+                  </div>
+                </Grid.Column>
+              </Grid.Row>
             </Grid.Column>
           </Grid.Row>
         </Grid>
@@ -187,7 +260,7 @@ class ThreadDetail extends Component {
           fluid
           size="large"
           onClick={this.submitReply}
-          color="teal"
+          color={this.props.thread.lock ? "grey" : "teal"}
         >
           Add Reply
         </Button>
@@ -205,14 +278,15 @@ class ThreadDetail extends Component {
     );
   }
 }
-function mapStateToProps({ authState, postState }) {
+function mapStateToProps({ authState, userState, postState }) {
   return {
     token: authState.token,
-    thread: postState.thread
+    thread: postState.thread,
+    id: userState._id
   };
 }
 
 export default connect(
   mapStateToProps,
-  { postReply, getReplies, getUser }
+  { postReply, getReplies, getUser, voteThread }
 )(ThreadDetail);
