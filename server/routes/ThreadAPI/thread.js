@@ -25,7 +25,7 @@ router.post("/thread", auth, async (req, res) => {
 /*-------------------------------------------------------------------
                             GET REQUEST                            
 ---------------------------------------------------------------------*/
-router.get("/threads", auth, async (req, res) => {
+router.get("/threads", async (req, res) => {
   const match = {};
   const sort = {};
   if (req.query.completed) {

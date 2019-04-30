@@ -71,7 +71,7 @@ class UserProfile extends Component {
           <Image
             circular
             style={{ margin: "15px auto" }}
-            src={`http://localhost:3001/users/${user._id}/avatar`}
+            src={`http://192.168.0.9:3001/users/${user._id}/avatar`}
             onError={e => {
               e.target.onerror = null;
               e.target.src = blankImg;
@@ -134,7 +134,7 @@ function mapStateToProps({ authState, userState, postState }) {
   return {
     token: authState.token,
     user: userState.otherUser,
-    role: userState.role,
+    role: userState.user.role,
     threads: postState.threads,
   };
 }

@@ -53,7 +53,7 @@ router.get("/replies", auth, async (req, res) => {
   }
 });
 
-router.get("/replies/thread/:id", auth, async (req, res) => {
+router.get("/replies/thread/:id", async (req, res) => {
   const match = {};
   const sort = {};
   if (req.query.completed) {
@@ -85,7 +85,7 @@ router.get("/replies/thread/:id", auth, async (req, res) => {
   }
 });
 
-router.get("/replies/all", auth, async (req, res) => {
+router.get("/replies/all", async (req, res) => {
   try {
     const replies = await Reply.find().countDocuments();
     res.send({ replies });

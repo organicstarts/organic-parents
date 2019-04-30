@@ -1,17 +1,38 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont,"Verdana", "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Verdana", "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f2edf4;
+  background: url(https://gallery.yopriceville.com/var/albums/Free-Clipart-Pictures/Grass-Grounds-Coverings-PNG-Clipart/Meadow_Ground_with_Trees_PNG_Clipart_Picture.png?m=1439693701)
+      no-repeat,
+    url(https://d3gxp5o5dficcj.cloudfront.net/FEGQb9rWMp8sy9hcQkRgVzyzcaASHTr9.png)
+      no-repeat;
+  background-position: bottom, center;
+  background-attachment: fixed;
+  background-size: contain, cover;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.bird::before {
+  background: url(./images/bird.png);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 15px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(255, 255, 255, 1) 100%
+  );
 }
 
 .hover:hover {

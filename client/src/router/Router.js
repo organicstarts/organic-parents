@@ -1,13 +1,16 @@
 import React, { Component } from "react";
 import { Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
+
 import {
   Profile,
   Main,
   ThreadForm,
   ThreadDetail,
   UserProfile,
-  BanList
+  BanList,
+  Auth,
+  LoginSignUp
 } from "../components/";
 
 class Router extends Component {
@@ -16,13 +19,16 @@ class Router extends Component {
       <main>
         <Switch>
           <Route exact path="/" component={Main} />
-          <Route path="/profile" component={Profile} />
-          <Route path="/userprofile" component={UserProfile} />
-          <Route path="/thread" component={ThreadForm} />
-          <Route path="/threaddetail" component={ThreadDetail} />
-          {(this.props.role === "admin" || this.props.role === "moderator") && (
-            <Route path="/banlist" component={BanList} />
-          )}
+          <Route path="login" component={LoginSignUp} />
+          <Auth>
+            <Route path="/profile" component={Profile} />
+            <Route path="/userprofile" component={UserProfile} />
+            <Route path="/thread" component={ThreadForm} />
+            <Route path="/threaddetail" component={ThreadDetail} />
+            {this.props.role !== "user" && (
+              <Route path="/banlist" component={BanList} />
+            )}
+          </Auth>
         </Switch>
       </main>
     );

@@ -11,13 +11,9 @@ import {
 } from "../constants";
 
 const INITIAL_STATE = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  role: "",
-  about: "",
   usersCount: 0,
   otherUser: {},
+  user: {},
   bannedUsers: []
 };
 
@@ -33,10 +29,7 @@ const setUser = (state, action) => {
     });
   }
 
-  let userInfo = {};
-  const keys = Object.keys(action.payload.user);
-  keys.forEach(key => (userInfo[key] = action.payload.user[key]));
-  return Object.assign({}, state, userInfo);
+  return Object.assign({}, state, { user: action.payload.user });
 };
 
 const setUserInfo = (state, action) => {

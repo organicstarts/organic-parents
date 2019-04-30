@@ -4,12 +4,9 @@ import { withRouter, Link } from "react-router-dom";
 import {
   Segment,
   Grid,
-  Container,
   Image,
   Header,
-  Form,
   Button,
-  Table,
   Icon,
   Label
 } from "semantic-ui-react";
@@ -78,6 +75,7 @@ class Main extends Component {
       .map((data, index) => {
         return (
           <Segment
+            className="bird"
             color={data.color}
             key={data._id}
             style={{ borderRadius: "15px" }}
@@ -86,7 +84,7 @@ class Main extends Component {
               <Grid.Row columns={2}>
                 <Grid.Column width={2} textAlign="center">
                   <Image
-                    src={`http://localhost:3001/users/${data.owner}/avatar`}
+                    src={`http://192.168.0.9:3001/users/${data.owner}/avatar`}
                     onError={e => {
                       e.target.onerror = null;
                       e.target.src = defaultImg;
@@ -108,7 +106,9 @@ class Main extends Component {
                       compact
                       icon="thumbs up"
                       color={
-                        data.thumbVote[this.props.id] === 1 ? "orange" : "grey"
+                        data.thumbVote[this.props.user._id] === 1
+                          ? "orange"
+                          : "grey"
                       }
                       onClick={() =>
                         this.props.voteThread(this.props.token, data._id, 1)
@@ -121,7 +121,9 @@ class Main extends Component {
                       compact
                       icon="thumbs down"
                       color={
-                        data.thumbVote[this.props.id] === 2 ? "purple" : "grey"
+                        data.thumbVote[this.props.user._id] === 2
+                          ? "purple"
+                          : "grey"
                       }
                       onClick={() =>
                         this.props.voteThread(this.props.token, data._id, 2)
@@ -186,7 +188,10 @@ class Main extends Component {
                     </div>
                   </Grid.Row>
                   <Grid>
-                    <Grid.Column style={{ marginTop: 25, color: "#999999" }} width={16}>
+                    <Grid.Column
+                      style={{ marginTop: 25, color: "#999999" }}
+                      width={16}
+                    >
                       <span
                         style={{ cursor: "pointer" }}
                         onClick={() => this.openThread(data)}
@@ -195,7 +200,7 @@ class Main extends Component {
                         {data.repliesCount}{" "}
                         {data.repliesCount === 1 ? "Comment" : "Comments"}
                       </span>
-                      {this.props.role === "admin" ? (
+                      {this.props.user.role === "admin" ? (
                         <span style={{ cursor: "pointer" }}>
                           <span
                             onClick={() =>
@@ -239,7 +244,7 @@ class Main extends Component {
           <Grid.Column computer={12} mobile={16}>
             {this.renderThreads()}
           </Grid.Column>
-          <Grid.Column width={4} only="large screen">
+          <Grid.Column width={4} only="computer">
             <h4> Statistics</h4>
             <Segment>
               <p>{this.props.userCount} MEMBERS</p>
@@ -255,17 +260,10 @@ class Main extends Component {
   }
 }
 
-const styles = {
-  margin: { padding: "50px" }
-};
-
 function mapStateToProps({ authState, userState, postState }) {
   return {
     token: authState.token,
-    firstName: userState.firstName,
-    lastName: userState.lastName,
-    id: userState._id,
-    role: userState.role,
+    user: userState.user,
     threads: postState.threads,
     threadCount: postState.threadCount,
     repliesCount: postState.repliesCount,

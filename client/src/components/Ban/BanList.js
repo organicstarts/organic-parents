@@ -15,7 +15,7 @@ class BanList extends Component {
       return (
         <Card>
           <Image
-            src={`http://localhost:3001/users/${user._id}/avatar`}
+            src={`http://192.168.0.9:3001/users/${user._id}/avatar`}
             onError={e => {
               e.target.onerror = null;
               e.target.src = defaultImg;

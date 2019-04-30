@@ -58,7 +58,7 @@ class ThreadDetail extends Component {
       return (
         <Comment key={reply._id}>
           <Comment.Avatar
-            src={`http://localhost:3001/users/${reply.owner}/avatar`}
+            src={`http://192.168.0.9:3001/users/${reply.owner}/avatar`}
             onError={e => {
               e.target.onerror = null;
               e.target.src = defaultImg;
@@ -116,7 +116,7 @@ class ThreadDetail extends Component {
           <Grid.Row columns={2}>
             <Grid.Column width={2} textAlign="center">
               <Image
-                src={`http://localhost:3001/users/${thread.owner}/avatar`}
+                src={`http://192.168.0.9:3001/users/${thread.owner}/avatar`}
                 onError={e => {
                   e.target.onerror = null;
                   e.target.src = defaultImg;
@@ -137,7 +137,9 @@ class ThreadDetail extends Component {
                   compact
                   icon="thumbs up"
                   color={
-                    thread.thumbVote[this.props.id] === 1 ? "orange" : "grey"
+                    thread.thumbVote[this.props.user._id] === 1
+                      ? "orange"
+                      : "grey"
                   }
                   onClick={() =>
                     this.props.voteThread(this.props.token, thread._id, 1)
@@ -151,7 +153,9 @@ class ThreadDetail extends Component {
                   compact
                   icon="thumbs down"
                   color={
-                    thread.thumbVote[this.props.id] === 2 ? "purple" : "grey"
+                    thread.thumbVote[this.props.user._id] === 2
+                      ? "purple"
+                      : "grey"
                   }
                   onClick={() =>
                     this.props.voteThread(this.props.token, thread._id, 2)
@@ -282,7 +286,7 @@ function mapStateToProps({ authState, userState, postState }) {
   return {
     token: authState.token,
     thread: postState.thread,
-    id: userState._id
+    user: userState.user
   };
 }
 

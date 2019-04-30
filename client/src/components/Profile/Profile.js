@@ -30,7 +30,7 @@ class Profile extends Component {
     this.state = {
       firstName: "",
       lastName: "",
-      about: this.props.about ? this.props.about : "",
+      about: this.props.user.about ? this.props.user.about : "",
       email: "",
       password: "",
       rePassword: "",
@@ -57,8 +57,12 @@ class Profile extends Component {
   }
 
   deleteAccount() {
-    this.props.deleteAccount(this.props.token);
-    this.props.logout(this.props.token);
+    if (window.confirm("are you sure you want to delete account?")) {
+      this.props.deleteAccount(this.props.token);
+      this.props.logout(this.props.token);
+    } else {
+      return false;
+    }
   }
 
   fileHandler = e => {
@@ -133,70 +137,127 @@ class Profile extends Component {
 
   render() {
     const { enableEdit } = this.state;
+    const { user } = this.props;
     return (
       <Container>
         <Grid centered stackable>
-          <Grid.Row divided columns={"equal"}>
+          <Grid.Row>
+            <Grid.Column>
+              <Header as="h2">My Profile</Header>
+              <Segment>
+                <Grid verticalAlign="middle">
+                  <Grid.Column computer={4} tablet={6} mobile={6}>
+                    <Image
+                      bordered
+                      size="large"
+                      fluid
+                      circular
+                      src={`http://192.168.0.9:3001/users/${user.id}/avatar`}
+                      onError={e => {
+                        e.target.onerror = null;
+                        e.target.src = blankImg;
+                      }}
+                    />
+                  </Grid.Column>
+                  <Grid.Column computer={12} tablet={10} mobile={10}>
+                    <Header as="h3" style={{ wordBreak: "break-all" }}>
+                      {`${user.firstName} ${user.lastName}`}
+                      <Header.Subheader>
+                        {user.email}
+                        <p>
+                          Joined: {moment(user.createdAt).format("MM/DD/YYYY")}{" "}
+                          <br />
+                          Group: {user.role}
+                        </p>
+                      </Header.Subheader>
+                    </Header>
+
+                    <Button
+                      circular
+                      toggle
+                      color="red"
+                      icon="trash"
+                      size="tiny"
+                      floated="left"
+                      onClick={this.deleteAccount}
+                    />
+
+                    <Button
+                      circular
+                      toggle
+                      icon="edit"
+                      color="teal"
+                      size="tiny"
+                      floated="left"
+                      onClick={this.enableEdit}
+                    />
+                    <Button
+                      circular
+                      color="orange"
+                      onClick={() => {
+                        document.getElementById("getFile").click();
+                      }}
+                      icon="camera"
+                      size="tiny"
+                      floated="left"
+                    />
+
+                    <input
+                      id="getFile"
+                      style={{ display: "none" }}
+                      type="file"
+                      accept="image/*"
+                      capture="camera"
+                      onChange={this.fileHandler}
+                    />
+                  </Grid.Column>
+                </Grid>
+              </Segment>
+            </Grid.Column>
+          </Grid.Row>
+
+          <Grid.Row style={{ marginBottom: "25px" }}>
             <Grid.Column>
               <Segment>
-                <Image
-                  circular
-                  style={{ margin: "15px auto" }}
-                  src={`http://localhost:3001/users/${this.props.id}/avatar`}
-                  onError={e => {
-                    e.target.onerror = null;
-                    e.target.src = blankImg;
-                  }}
-                />
-                <Header as="h2" floated="left">
-                  My Profile{" "}
-                </Header>
-                <Button
-                  circular
-                  floated="right"
-                  onClick={() => {
-                    document.getElementById("getFile").click();
-                  }}
-                >
-                  Add Photo
-                </Button>
-                <input
-                  id="getFile"
-                  style={{ display: "none" }}
-                  type="file"
-                  accept="image/*"
-                  capture="camera"
-                  onChange={this.fileHandler}
-                />
-                <Button circular toggle icon="edit" onClick={this.enableEdit} />{" "}
-                <Header as="h4">{this.props.email}</Header>
+                <Header as="h3">About Me</Header>
+                {this.state.enableEdit ? (
+                  <TextArea
+                    style={{ width: "100%" }}
+                    name="about"
+                    placeholder="Write something about yourself..."
+                    value={this.state.about}
+                    onChange={this.handleChange}
+                  />
+                ) : (
+                  <div style={{textIndent: "2em"}}>{this.state.about}</div>
+                )}
                 <Form onSubmit={this.saveChanges}>
-                  <Form.Group inline>
-                    <Form.Input
-                      label="First Name:"
-                      transparent
-                      placeholder={this.props.firstName}
-                      name="firstName"
-                      type="text"
-                      value={
-                        enableEdit ? this.state.firstName : this.props.firstName
-                      }
-                      onChange={this.handleChange}
-                    />
-                    <Form.Input
-                      label="Last Name:"
-                      transparent
-                      placeholder={this.props.lastName}
-                      name="lastName"
-                      type="text"
-                      value={
-                        enableEdit ? this.state.lastName : this.props.lastName
-                      }
-                      onChange={this.handleChange}
-                    />
-                  </Form.Group>
                   {this.state.enableEdit && (
                     <div>
+                      <Form.Group inline>
+                        <Form.Input
+                          label="First Name:"
+                          transparent
+                          placeholder={user.firstName}
+                          name="firstName"
+                          type="text"
+                          value={
+                            enableEdit ? this.state.firstName : user.firstName
+                          }
+                          onChange={this.handleChange}
+                        />
+                        <Form.Input
+                          label="Last Name:"
+                          transparent
+                          placeholder={user.lastName}
+                          name="lastName"
+                          type="text"
+                          value={
+                            enableEdit ? this.state.lastName : user.lastName
+                          }
+                          onChange={this.handleChange}
+                        />
+                      </Form.Group>
                       <Form.Input
                         label={
                           this.checkError()
@@ -227,48 +288,22 @@ class Profile extends Component {
                     </div>
                   )}
                 </Form>
-                <Button circular onClick={this.deleteAccount}>
-                  Delete Account
-                </Button>
               </Segment>
             </Grid.Column>
-            <Grid.Column>
-              <Grid.Row style={{ marginBottom: "25px" }}>
-                <Grid.Column>
-                  <Segment>
-                    {this.state.enableEdit ? (
-                      <TextArea
-                        style={{ width: "100%" }}
-                        name="about"
-                        value={this.state.about}
-                        onChange={this.handleChange}
-                      />
-                    ) : (
-                      <div>
-                        <Header as="h3">About Me</Header>
-                        {this.state.about}
-                      </div>
-                    )}
-                  </Segment>
-                </Grid.Column>
-              </Grid.Row>
-              <Grid.Row>
-                <Grid.Column>
-                  <Segment>
-                    <Table>
-                      <Table.Header>
-                        <Table.Row>
-                          <Table.Cell>
-                            <Header as="h3">Your Posts</Header>
-                          </Table.Cell>
-                        </Table.Row>
-                      </Table.Header>
-                      <Table.Body>{this.renderPost()}</Table.Body>
-                    </Table>
-                  </Segment>
-                </Grid.Column>
-              </Grid.Row>
-            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Segment>
+              <Table>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.Cell>
+                      <Header as="h3">Your Posts</Header>
+                    </Table.Cell>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>{this.renderPost()}</Table.Body>
+              </Table>
+            </Segment>
           </Grid.Row>
         </Grid>
       </Container>
@@ -278,11 +313,7 @@ class Profile extends Component {
 
 function mapStateToProps({ authState, userState, postState }) {
   return {
-    email: userState.email,
-    firstName: userState.firstName,
-    lastName: userState.lastName,
-    about: userState.about,
-    id: userState._id,
+    user: userState.user,
     token: authState.token,
     myReplies: postState.myReplies,
     threads: postState.threads
