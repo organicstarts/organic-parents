@@ -43,7 +43,6 @@ function* handlePostReply(action) {
   try {
     const payload = yield call(postReply, action);
     yield put({ type: POST_REPLY_LOADED, payload });
-    document.location.reload();
   } catch (e) {
     yield put({ type: "API_ERRORED", payload: e });
   }

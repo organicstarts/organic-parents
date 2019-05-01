@@ -7,7 +7,8 @@ import {
   GET_REPLIES_COUNT_LOADED,
   LOCK_THREAD_LOADED,
   GET_MY_REPLY_LOADED,
-  VOTE_THREAD_LOADED
+  VOTE_THREAD_LOADED,
+  POST_REPLY_LOADED
 } from "../constants";
 import categories from "../../config-client/categories.json";
 import moment from "moment";
@@ -82,6 +83,14 @@ const removeThread = (state, action) => {
   });
 };
 
+const addThreadReply = (state, action) => {
+  const currentThread = { ...state.thread };
+  currentThread.replies.push(action.payload.data);
+  return Object.assign({}, state, {
+    thread: currentThread
+  });
+};
+
 const setLockThread = (state, action) => {
   const tempThreads = [...state.threads];
   tempThreads.map(thread => {
@@ -104,7 +113,7 @@ const setVoteThread = (state, action) => {
       thread.thumbVote = action.payload.data.thumbVote;
     }
   });
-  if(singleThread._id === action.payload.data._id) {
+  if (singleThread._id === action.payload.data._id) {
     singleThread.points = action.payload.data.points;
     singleThread.thumbVote = action.payload.data.thumbVote;
   }
@@ -144,6 +153,9 @@ function postReducer(state = INITIAL_STATE, action) {
       return Object.assign({}, state, {
         myReplies: action.payload.data
       });
+    }
+    case POST_REPLY_LOADED: {
+      return addThreadReply(state, action);
     }
     case LOCK_THREAD_LOADED: {
       return setLockThread(state, action);

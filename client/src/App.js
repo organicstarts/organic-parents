@@ -86,7 +86,7 @@ class App extends Component {
                 <Button.Content visible>Create Thread</Button.Content>
               </Button>
             </Menu.Item>
-            <Menu.Item>
+            {/* <Menu.Item>
               <Search
                 input={{ icon: "search", iconPosition: "left" }}
                 loading={isLoading}
@@ -101,7 +101,7 @@ class App extends Component {
                 resultRenderer={resultRenderer}
                 {...this.props}
               />
-            </Menu.Item>
+            </Menu.Item> */}
             <Menu.Item
               position="right"
               fitted="horizontally"

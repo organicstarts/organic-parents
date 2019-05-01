@@ -50,15 +50,15 @@ class ThreadForm extends Component {
   }
 
   render() {
+    console.log(this.state.content)
     return (
       <Grid columns={2}>
         <Grid.Row>
-          <Grid.Column width={12}>
+          <Grid.Column computer={12} mobile={16}>
             <Header as="h1">Create a post</Header>
 
             <Form onSubmit={this.createThread} size="large">
               <Form.Select
-                style={{ width: "25em" }}
                 placeholder="Select Category"
                 name="category"
                 options={categories}
@@ -127,8 +127,8 @@ class ThreadForm extends Component {
               </Segment>
             </Form>
           </Grid.Column>
-          <Grid.Column width={4}>
-            <h4> Statistics</h4>
+          <Grid.Column computer={4} mobile={16}>
+            <Header style={{marginTop: "15px"}} as="h4"> Statistics</Header>
             <Segment>
               <p>{this.props.userCount} MEMBERS</p>
               <p>{this.props.threadCount} THREAD</p>

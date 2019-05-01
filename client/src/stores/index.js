@@ -24,5 +24,3 @@ export const store = createStore(
 export const persistor = persistStore(store);
 
 saga.run(rootSaga);
-
-

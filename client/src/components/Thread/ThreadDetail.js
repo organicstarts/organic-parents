@@ -137,6 +137,7 @@ class ThreadDetail extends Component {
                   compact
                   icon="thumbs up"
                   color={
+                    thread.thumbVote &&
                     thread.thumbVote[this.props.user._id] === 1
                       ? "orange"
                       : "grey"
@@ -153,6 +154,7 @@ class ThreadDetail extends Component {
                   compact
                   icon="thumbs down"
                   color={
+                    thread.thumbVote &&
                     thread.thumbVote[this.props.user._id] === 2
                       ? "purple"
                       : "grey"
