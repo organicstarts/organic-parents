@@ -1,4 +1,5 @@
 import Profile from "./Profile/Profile";
+import MemberList from "./Profile/MemberList";
 import UserProfile from "./Profile/UserProfile";
 import Main from "./Main/Main";
 import ThreadForm from "./Thread/ThreadForm";
@@ -15,5 +16,6 @@ export {
   UserProfile,
   BanList,
   Auth,
-  LoginSignUp
+  LoginSignUp,
+  MemberList
 };

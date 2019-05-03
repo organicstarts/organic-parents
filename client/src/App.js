@@ -18,6 +18,7 @@ import logo from "./images/organic-parents-logo.png";
 import _ from "lodash";
 import ReactHtmlParser from "react-html-parser";
 import Responsive from "react-responsive";
+import defaultImg from "./images/image.png";
 
 const resultRenderer = ({ subject, content }) => {
   return (
@@ -107,7 +108,7 @@ class App extends Component {
               fitted="horizontally"
               style={{ marginRight: "25px" }}
             >
-              {this.props.role !== "user" && (
+              {this.props.role && this.props.role !== "user" && (
                 <Button
                   as={Link}
                   to="/banlist"
@@ -123,12 +124,25 @@ class App extends Component {
               <Button
                 as={Link}
                 to="/profile"
-                circular
                 color="olive"
-                icon="user"
+                icon={
+                  <Image
+                    src={`http://192.168.0.9:3001/users/${
+                      this.props.id
+                    }/avatar`}
+                    onError={e => {
+                      e.target.onerror = null;
+                      e.target.src = defaultImg;
+                    }}
+                    circular
+                  />
+                }
                 label="My Account"
-                size="mini"
-                style={{ marginRight: "25px", height: "25px" }}
+                style={{
+                  marginRight: "25px",
+                  height: "50px"
+                }}
+                circular
               />
               {this.props.token ? (
                 <Button
@@ -203,6 +217,7 @@ function mapStateToProps({ authState, userState, postState }) {
   return {
     token: authState.token,
     role: userState.user.role,
+    id: userState.user._id,
     threads: postState.threads
   };
 }

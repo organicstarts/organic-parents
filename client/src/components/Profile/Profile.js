@@ -150,7 +150,6 @@ class Profile extends Component {
                     <Image
                       bordered
                       size="large"
-                      fluid
                       circular
                       src={`http://192.168.0.9:3001/users/${user.id}/avatar`}
                       onError={e => {

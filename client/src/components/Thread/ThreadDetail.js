@@ -22,7 +22,7 @@ class ThreadDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      content: ""
+      content: localStorage.getItem("content") || ""
       // toggle: this.props.thread.replies.map(reply => false)
     };
     this.handleChange = this.handleChange.bind(this);

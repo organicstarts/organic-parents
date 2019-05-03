@@ -89,8 +89,8 @@ class Main extends Component {
                       e.target.onerror = null;
                       e.target.src = defaultImg;
                     }}
-                    onClick={() =>
-                      this.props.getUser(data.owner, this.props.token)
+                    onClick={async () =>
+                      await this.props.getUser(data.owner, this.props.token)
                     }
                     href="/userprofile"
                     circular
@@ -247,7 +247,9 @@ class Main extends Component {
           <Grid.Column width={4} only="computer">
             <h4> Statistics</h4>
             <Segment>
-              <p>{this.props.userCount} MEMBERS</p>
+              <p>
+                <Link to="/memberlist">{this.props.userCount} MEMBERS</Link>
+              </p>
               <p>{this.props.threadCount} THREAD</p>
               <p>{this.props.repliesCount} REPLIES</p>
             </Segment>

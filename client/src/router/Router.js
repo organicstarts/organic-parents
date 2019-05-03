@@ -10,7 +10,8 @@ import {
   UserProfile,
   BanList,
   Auth,
-  LoginSignUp
+  LoginSignUp,
+  MemberList
 } from "../components/";
 
 class Router extends Component {
@@ -23,6 +24,7 @@ class Router extends Component {
           <Auth>
             <Route path="/profile" component={Profile} />
             <Route path="/userprofile" component={UserProfile} />
+            <Route path="/memberlist" component={MemberList} />
             <Route path="/thread" component={ThreadForm} />
             <Route path="/threaddetail" component={ThreadDetail} />
             {this.props.role !== "user" && (

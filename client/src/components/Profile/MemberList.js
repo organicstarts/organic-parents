@@ -1,17 +1,18 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getBannedUsers, banUser } from "../../stores/actions/user";
+import { getAllUsers, banUser } from "../../stores/actions/user";
 import { Card, Image, Icon, Container } from "semantic-ui-react";
 import defaultImg from "../../images/image.png";
 import moment from "moment";
-class BanList extends Component {
+
+class MemberList extends Component {
   componentDidMount() {
-    this.props.getBannedUsers(this.props.token);
+    this.props.getAllUsers(this.props.token);
   }
 
   renderBannedUsers() {
-    const { bannedUsers } = this.props;
-    return bannedUsers.map(user => {
+    const { allUsers } = this.props;
+    return allUsers.map(user => {
       return (
         <Card key={user._id}>
           <Image
@@ -34,12 +35,14 @@ class BanList extends Component {
             <Card.Description>{user.about}</Card.Description>
           </Card.Content>
           <Card.Content extra>
-            <Icon
-              link
-              name="ban"
-              color={user.ban ? "red" : "grey"}
-              onClick={() => this.props.banUser(user._id, this.props.token)}
-            />
+            {this.props.role && this.props.role !== "user" && (
+              <Icon
+                link
+                name="ban"
+                color={user.ban ? "red" : "grey"}
+                onClick={() => this.props.banUser(user._id, this.props.token)}
+              />
+            )}
           </Card.Content>
         </Card>
       );
@@ -50,7 +53,7 @@ class BanList extends Component {
     return (
       <Container>
         <Card.Group>
-          {this.props.bannedUsers && this.renderBannedUsers()}
+          {this.props.allUsers && this.renderBannedUsers()}
         </Card.Group>
       </Container>
     );
@@ -59,11 +62,12 @@ class BanList extends Component {
 
 function mapStatesToProp({ authState, userState }) {
   return {
-    bannedUsers: userState.bannedUsers,
-    token: authState.token
+    allUsers: userState.allUsers,
+    token: authState.token,
+    role: userState.user.role
   };
 }
 export default connect(
   mapStatesToProp,
-  { getBannedUsers, banUser }
-)(BanList);
+  { getAllUsers, banUser }
+)(MemberList);

@@ -19,7 +19,8 @@ import {
   UPDATE_USER,
   GET_MY_REPLY,
   GET_BANNED_USERS,
-  VOTE_THREAD
+  VOTE_THREAD,
+  GET_ALL_USERS
 } from "../constants";
 import { handleLogin, handleSignUp, handleLogout } from "./auth";
 import {
@@ -30,7 +31,8 @@ import {
   handleBanUser,
   handleChangeRole,
   handleUpdateUser,
-  handleGetBannedUser
+  handleGetBannedUser,
+  handleGetAllUsers
 } from "./user";
 import {
   handleCreateThread,
@@ -65,4 +67,5 @@ export default function* watcherSaga() {
   yield takeEvery(GET_MY_REPLY, handleGetMyReplies);
   yield takeEvery(GET_BANNED_USERS, handleGetBannedUser);
   yield takeEvery(VOTE_THREAD, handlevoteThread);
+  yield takeEvery(GET_ALL_USERS, handleGetAllUsers);
 }

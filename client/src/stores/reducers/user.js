@@ -7,14 +7,16 @@ import {
   BAN_USER_LOADED,
   CHANGE_ROLE_LOADED,
   UPDATE_USER_LOADED,
-  GET_BANNED_USERS_LOADED
+  GET_BANNED_USERS_LOADED,
+  GET_ALL_USERS_LOADED
 } from "../constants";
 
 const INITIAL_STATE = {
   usersCount: 0,
   otherUser: {},
   user: {},
-  bannedUsers: []
+  bannedUsers: [],
+  allUsers: []
 };
 
 const setUser = (state, action) => {
@@ -93,6 +95,11 @@ function userReducer(state = INITIAL_STATE, action) {
       return Object.assign({}, state, {
         bannedUsers: action.payload.data
       });
+    }
+    case GET_ALL_USERS_LOADED: {
+      return Object.assign({}, state, {
+        allUsers: action.payload.data
+      })
     }
     case "API_ERRORED": {
       return { ...INITIAL_STATE };

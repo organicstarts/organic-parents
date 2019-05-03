@@ -15,15 +15,17 @@ import ReactQuill, { Quill } from "react-quill";
 import ImageResize from "quill-image-resize-module-react";
 import "react-quill/dist/quill.snow.css";
 import logo from "../../images/organic-parents-logo.png";
+import axios from "axios";
 
 Quill.register("modules/imageResize", ImageResize);
 class ThreadForm extends Component {
   constructor() {
     super();
     this.state = {
-      subject: "",
-      content: "",
-      category: ""
+      subject: localStorage.getItem("subject") || "",
+      content: localStorage.getItem("content") || "",
+      category: localStorage.getItem("category") || "",
+      urlIds: JSON.parse(localStorage.getItem("urlIds")) || []
     };
     this.handleChange = this.handleChange.bind(this);
     this.createThread = this.createThread.bind(this);
@@ -31,15 +33,28 @@ class ThreadForm extends Component {
     this.handleContentChange = this.handleContentChange.bind(this);
   }
 
-  handleChange = e => this.setState({ [e.target.name]: e.target.value });
+  handleChange = e =>
+    this.setState({ [e.target.name]: e.target.value }, () => {
+      localStorage.setItem("subject", this.state.subject);
+    });
   handleContentChange(value) {
-    this.setState({ content: value });
+    this.setState({ content: value }, () => {
+      localStorage.setItem("content", this.state.content);
+    });
   }
 
-  handleSelectChange = (e, data) => this.setState({ [data.name]: data.value });
+  handleSelectChange = (e, data) =>
+    this.setState({ [data.name]: data.value }, () => {
+      localStorage.setItem("category", this.state.category);
+    });
 
   createThread() {
-    const { subject, category, content } = this.state;
+    const { urlIds, subject, category, content } = this.state;
+    urlIds.map(async id => {
+      if (!content.includes(id)) {
+        await axios.delete(`image/${id}`);
+      }
+    });
     const threadInfo = {
       subject,
       category,
@@ -47,10 +62,61 @@ class ThreadForm extends Component {
       token: this.props.token
     };
     this.props.createNewThread(threadInfo);
+
+    localStorage.removeItem("content");
+    localStorage.removeItem("subject");
+    localStorage.removeItem("category");
+    localStorage.removeItem("urlIds");
+    
   }
 
+  imageHandler = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.click();
+
+    // Listen upload local image and save to server
+    input.onchange = () => {
+      const file = input.files[0];
+
+      // file type is only image.
+      if (/^image\//.test(file.type) && file.size < 1000000) {
+        this.saveToServer(file);
+      } else {
+        alert("File is too large");
+      }
+    };
+  };
+
+  saveToServer = async file => {
+    let formData = new FormData();
+    formData.append("imgFile", file);
+    await axios
+      .post("/image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      })
+      .then(img => {
+        this.insertToEditor(img.data._id);
+      })
+      .catch(e => {
+        alert("FILE TOO LARGE");
+      });
+  };
+
+  insertToEditor = async url => {
+    let addImg = this.state.content;
+    let urlId = [...this.state.urlIds];
+    urlId.push(url);
+    addImg = addImg + `<Image src="http://192.168.0.9:3001/imgFile/${url}" />`;
+
+    this.setState({ content: addImg, urlIds: urlId }, () => {
+      localStorage.setItem("urlIds", JSON.stringify(this.state.urlIds));
+    });
+  };
+
   render() {
-    console.log(this.state.content)
     return (
       <Grid columns={2}>
         <Grid.Row>
@@ -63,6 +129,7 @@ class ThreadForm extends Component {
                 name="category"
                 options={categories}
                 onChange={this.handleSelectChange}
+                value={this.state.category}
                 required
               />
               <Segment>
@@ -82,18 +149,21 @@ class ThreadForm extends Component {
                   onChange={this.handleContentChange}
                   theme="snow"
                   modules={{
-                    toolbar: [
-                      [{ header: [1, 2, false] }],
-                      ["bold", "italic", "underline", "strike", "blockquote"],
-                      [
-                        { list: "ordered" },
-                        { list: "bullet" },
-                        { indent: "-1" },
-                        { indent: "+1" }
+                    toolbar: {
+                      container: [
+                        [{ header: [1, 2, false] }],
+                        ["bold", "italic", "underline", "strike", "blockquote"],
+                        [
+                          { list: "ordered" },
+                          { list: "bullet" },
+                          { indent: "-1" },
+                          { indent: "+1" }
+                        ],
+                        ["link", "image"],
+                        ["clean"]
                       ],
-                      ["link", "image"],
-                      ["clean"]
-                    ],
+                      handlers: { image: this.imageHandler }
+                    },
                     imageResize: {
                       handleStyles: {
                         backgroundColor: "black",
@@ -128,7 +198,10 @@ class ThreadForm extends Component {
             </Form>
           </Grid.Column>
           <Grid.Column computer={4} mobile={16}>
-            <Header style={{marginTop: "15px"}} as="h4"> Statistics</Header>
+            <Header style={{ marginTop: "15px" }} as="h4">
+              {" "}
+              Statistics
+            </Header>
             <Segment>
               <p>{this.props.userCount} MEMBERS</p>
               <p>{this.props.threadCount} THREAD</p>
