@@ -26,18 +26,24 @@ router.post("/thread", auth, async (req, res) => {
                             GET REQUEST                            
 ---------------------------------------------------------------------*/
 router.get("/threads", async (req, res) => {
-  const match = {};
-  const sort = {};
-  if (req.query.completed) {
-    match.completed = req.query.completed === "true";
-  }
-  if (req.query.sortBy) {
-    const parts = req.query.sortBy.split(":");
-    sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
-  }
+  // const match = {};
+  // const sort = {};
+  // if (req.query.completed) {
+  //   match.completed = req.query.completed === "true";
+  // }
+  // if (req.query.sortBy) {
+  //   const parts = req.query.sortBy.split(":");
+  //   sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
+  // }
+
+  const limit = req.query.limit ? parseInt(req.query.limit) : 5;
+  const skip = req.query.skip ? parseInt(limit * req.query.skip) : 0;
 
   try {
-    const threads = await Thread.find({});
+    const threads = await Thread.find({}).sort({ createdAt: -1 }).limit(limit).skip(skip);
+    if(!threads) {
+      res.status(401).send()
+    }
     const threadObj = {
       threads: threads,
       count: threads.length

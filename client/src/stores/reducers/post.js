@@ -8,7 +8,8 @@ import {
   LOCK_THREAD_LOADED,
   GET_MY_REPLY_LOADED,
   VOTE_THREAD_LOADED,
-  POST_REPLY_LOADED
+  POST_REPLY_LOADED,
+  GET_THREADS
 } from "../constants";
 import categories from "../../config-client/categories.json";
 import moment from "moment";
@@ -18,7 +19,9 @@ const INITIAL_STATE = {
   thread: [],
   threadCount: 0,
   repliesCount: 0,
-  myReplies: []
+  myReplies: [],
+  loading: true,
+  hasMore: true
 };
 
 const getCategoryColor = category => {
@@ -31,6 +34,11 @@ const getCategoryColor = category => {
 };
 
 const setThread = (state, action) => {
+  if (action.payload.data.threads.length < 1)
+    return Object.assign({}, state, {
+      hasMore: false,
+      loading: false
+    });
   if (action.payload.errmsg) {
     return Object.assign({}, state, {
       error: ""
@@ -57,11 +65,14 @@ const setThread = (state, action) => {
       result += days + (days === 1 ? " day ago" : " days ago");
     }
 
-    data.createdAt = result;
+    return (data.createdAt = result);
   });
+  let allThreads = [...state.threads];
+  allThreads = allThreads.concat(action.payload.data.threads);
   return Object.assign({}, state, {
-    threads: action.payload.data.threads,
-    threadCount: action.payload.data.count
+    threads: allThreads,
+    threadCount: state.threadCount + action.payload.data.count,
+    loading: false
   });
 };
 
@@ -127,6 +138,11 @@ function postReducer(state = INITIAL_STATE, action) {
   switch (action.type) {
     case GET_THREADS_LOADED: {
       return setThread(state, action);
+    }
+    case GET_THREADS: {
+      return Object.assign({}, state, {
+        loading: true
+      });
     }
     case SINGLE_THREAD: {
       return Object.assign({}, state, {

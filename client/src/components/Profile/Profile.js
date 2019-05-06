@@ -228,7 +228,7 @@ class Profile extends Component {
                     onChange={this.handleChange}
                   />
                 ) : (
-                  <div style={{textIndent: "2em"}}>{this.state.about}</div>
+                  <div style={{ textIndent: "2em" }}>{this.state.about}</div>
                 )}
                 <Form onSubmit={this.saveChanges}>
                   {this.state.enableEdit && (

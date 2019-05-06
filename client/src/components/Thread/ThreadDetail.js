@@ -17,12 +17,14 @@ import ReactHtmlParser from "react-html-parser";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import moment from "moment";
+import axios from "axios";
 
 class ThreadDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      content: localStorage.getItem("content") || ""
+      replyContent: localStorage.getItem("replyContent") || "",
+      replyUrlIds: localStorage.getItem("replyUrlIds") || []
       // toggle: this.props.thread.replies.map(reply => false)
     };
     this.handleChange = this.handleChange.bind(this);
@@ -30,16 +32,24 @@ class ThreadDetail extends Component {
   }
 
   handleChange(value) {
-    this.setState({ content: value });
+    this.setState({ replyContent: value });
   }
   submitReply() {
-    const { content } = this.state;
+    const { replyContent, replyUrlIds } = this.state;
+    replyUrlIds.map(async id => {
+      if (!replyContent.includes(id)) {
+        await axios.delete(`image/${id}`);
+      }
+    });
     const replyInfo = {
-      content,
+      replyContent,
       threadId: this.props.thread._id,
       token: this.props.token
     };
     this.props.postReply(replyInfo);
+    localStorage.removeItem("replyContent");
+    localStorage.removeItem("replyUrlIds");
+    this.setState({ replyContent: "", replyUrlIds: [] });
   }
 
   componentDidMount() {
@@ -49,6 +59,53 @@ class ThreadDetail extends Component {
     };
     this.props.getReplies(replyInfo);
   }
+
+  imageHandler = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.click();
+
+    // Listen upload local image and save to server
+    input.onchange = () => {
+      const file = input.files[0];
+
+      // file type is only image.
+      if (/^image\//.test(file.type) && file.size < 1000000) {
+        this.saveToServer(file);
+      } else {
+        alert("File is too large");
+      }
+    };
+  };
+
+  saveToServer = async file => {
+    let formData = new FormData();
+    formData.append("imgFile", file);
+    await axios
+      .post("/image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      })
+      .then(img => {
+        this.insertToEditor(img.data._id);
+      })
+      .catch(e => {
+        alert("FILE TOO LARGE");
+      });
+  };
+
+  insertToEditor = async url => {
+    let addImg = this.state.replyContent;
+    let urlId = [...this.state.urlIds];
+    urlId.push(url);
+    addImg = addImg + `<Image src="http://192.168.0.9:3001/imgFile/${url}" />`;
+
+    this.setState({ replyContent: addImg, urlIds: urlId }, () => {
+      localStorage.setItem("urlIds", JSON.stringify(this.state.urlIds));
+    });
+  };
+
   showReplies() {
     const { thread } = this.props;
     if (!thread.replies) {
@@ -107,7 +164,7 @@ class ThreadDetail extends Component {
               right: 0,
               bottom: 0,
               backgroundImage:
-                "linear-gradient(0deg, rgba(2,0,36,.25) 0%, rgba(9,9,121,.25) 35%, rgba(0,212,255,.25) 100%)",
+                "linear-gradient(0deg, #e2e2e2 0%, rgba(9,9,121,.25) 35%, rgba(2,0,36,.25) 100%)",
               zIndex: 2
             }}
           />
@@ -216,23 +273,26 @@ class ThreadDetail extends Component {
         </Grid>
         <ReactQuill
           readOnly={this.props.thread.lock ? true : false}
-          value={this.state.content}
+          value={this.state.replyContent}
           onChange={this.handleChange}
           theme="snow"
           placeholder="What are your thoughts..."
           modules={{
-            toolbar: [
-              [{ header: [1, 2, false] }],
-              ["bold", "italic", "underline", "strike", "blockquote"],
-              [
-                { list: "ordered" },
-                { list: "bullet" },
-                { indent: "-1" },
-                { indent: "+1" }
+            toolbar: {
+              container: [
+                [{ header: [1, 2, false] }],
+                ["bold", "italic", "underline", "strike", "blockquote"],
+                [
+                  { list: "ordered" },
+                  { list: "bullet" },
+                  { indent: "-1" },
+                  { indent: "+1" }
+                ],
+                ["link", "image"],
+                ["clean"]
               ],
-              ["link", "image"],
-              ["clean"]
-            ],
+              handlers: { image: this.imageHandler }
+            },
             imageResize: {
               handleStyles: {
                 backgroundColor: "black",

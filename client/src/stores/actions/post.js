@@ -16,9 +16,9 @@ const createNewThread = threadInfo => ({
   payload: threadInfo
 });
 
-const getThreads = token => ({
+const getThreads = (token, page) => ({
   type: GET_THREADS,
-  payload: token
+  payload: { token, page }
 });
 
 const setSingleThread = data => ({

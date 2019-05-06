@@ -102,7 +102,7 @@ const voteThread = async action => {
         Authorization: token
       }
     }
-  )
+  );
 };
 
 const createThread = async action => {
@@ -119,10 +119,10 @@ const createThread = async action => {
 };
 
 const postReply = async action => {
-  const { threadId, content, token } = action.payload;
+  const { threadId, replyContent, token } = action.payload;
   return await axios.post(
     "/reply",
-    { content, thread: threadId },
+    { content: replyContent, thread: threadId },
     {
       headers: {
         Authorization: token
@@ -141,7 +141,7 @@ const getReplies = async action => {
 };
 
 const getMyReplies = async action => {
-  const  token  = action.payload;
+  const token = action.payload;
   return await axios.get(`/replies`, {
     headers: {
       Authorization: token
@@ -150,23 +150,19 @@ const getMyReplies = async action => {
 };
 
 const getThreads = async action => {
-  const token = action.payload;
-  return await axios
-    .get("/threads", {
-      headers: {
-        Authorization: token
-      }
-    })
-    .then(async datas => {
-      await Promise.all(
-        datas.data.threads.map(async data => {
-          data.repliesCount = await getReplies({
-            payload: { threadId: data._id, token }
-          }).then(data => data.data.length);
-        })
-      );
-      return datas;
-    });
+  const token = action.payload.token;
+  const page = action.payload.page;
+
+  return await axios.get(`/threads?skip=${page}`).then(async datas => {
+    await Promise.all(
+      datas.data.threads.map(async data => {
+        data.repliesCount = await getReplies({
+          payload: { threadId: data._id, token }
+        }).then(data => data.data.length);
+      })
+    );
+    return datas;
+  });
 };
 
 const deleteThread = async action => {
@@ -198,7 +194,7 @@ const getRepliesCount = async action => {
     headers: {
       Authorization: token
     }
-  })
+  });
 };
 
 export {

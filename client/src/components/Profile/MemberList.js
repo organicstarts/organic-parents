@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getAllUsers, banUser } from "../../stores/actions/user";
+import { getAllUsers, banUser, getUser } from "../../stores/actions/user";
 import { Card, Image, Icon, Container } from "semantic-ui-react";
 import defaultImg from "../../images/image.png";
 import moment from "moment";
@@ -21,6 +21,10 @@ class MemberList extends Component {
               e.target.onerror = null;
               e.target.src = defaultImg;
             }}
+            onClick={async () =>
+              await this.props.getUser(user._id, this.props.token)
+            }
+            href="/userprofile"
             style={{ minHeight: "250px" }}
           />
           <Card.Content>
@@ -69,5 +73,5 @@ function mapStatesToProp({ authState, userState }) {
 }
 export default connect(
   mapStatesToProp,
-  { getAllUsers, banUser }
+  { getAllUsers, banUser, getUser }
 )(MemberList);
