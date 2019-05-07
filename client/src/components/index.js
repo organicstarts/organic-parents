@@ -7,6 +7,7 @@ import ThreadDetail from "./Thread/ThreadDetail";
 import BanList from "./Ban/BanList";
 import Auth from "./Auth/Auth";
 import LoginSignUp from "./Auth/LoginSignUp";
+import Message from "./Message/Message";
 
 export {
   Profile,
@@ -17,5 +18,6 @@ export {
   BanList,
   Auth,
   LoginSignUp,
-  MemberList
+  MemberList,
+  Message
 };

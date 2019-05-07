@@ -11,7 +11,8 @@ import {
   BanList,
   Auth,
   LoginSignUp,
-  MemberList
+  MemberList,
+  Message
 } from "../components/";
 
 class Router extends Component {
@@ -23,6 +24,7 @@ class Router extends Component {
           <Route path="login" component={LoginSignUp} />
           <Auth>
             <Route path="/profile" component={Profile} />
+            <Route path="/message" component={Message} />
             <Route path="/userprofile" component={UserProfile} />
             <Route path="/memberlist" component={MemberList} />
             <Route path="/thread" component={ThreadForm} />

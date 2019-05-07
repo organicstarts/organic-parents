@@ -123,6 +123,16 @@ class App extends Component {
 
               <Button
                 as={Link}
+                to="/message"
+                color="facebook"
+                icon="envelope outline"
+                label="Messages"
+                circular
+                size="mini"
+                style={{ marginRight: "25px", height: "25px" }}
+              />
+              <Button
+                as={Link}
                 to="/profile"
                 color="olive"
                 icon={

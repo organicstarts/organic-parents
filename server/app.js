@@ -6,8 +6,10 @@ require("./db/mongoose");
 const router = express.Router();
 const userRoutes = require("./routes/UserAPI/user");
 const replyRoutes = require("./routes/ReplyAPI/reply");
-const threadRoutes = require("./routes/threadAPI/thread");
-const imageRoutes = require("./routes/imageAPI/image");
+const threadRoutes = require("./routes/ThreadAPI/thread");
+const imageRoutes = require("./routes/ImageAPI/image");
+const conversationRoutes = require("./routes/MessageApi/conversation");
+const messageRoutes = require("./routes/MessageApi/message");
 const staticFiles = express.static(path.join(__dirname, "../../client/build"));
 require("./config/seed");
 app.use(bodyParser.json({ limit: "10mb" }));
@@ -18,6 +20,8 @@ app.use(userRoutes);
 app.use(replyRoutes);
 app.use(threadRoutes);
 app.use(imageRoutes);
+app.use(conversationRoutes);
+app.use(messageRoutes);
 // any routes not picked up by the server api will be handled by the react router
 app.use("/*", staticFiles);
 
