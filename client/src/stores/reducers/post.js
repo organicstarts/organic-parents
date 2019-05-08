@@ -139,6 +139,11 @@ function postReducer(state = INITIAL_STATE, action) {
     case GET_THREADS_LOADED: {
       return setThread(state, action);
     }
+    case GET_THREADS_LOADED: {
+      return Object.assign({}, state, {
+        thread: action.payload
+      });
+    }
     case GET_THREADS: {
       return Object.assign({}, state, {
         loading: true

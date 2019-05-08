@@ -50,6 +50,7 @@ router.get("/imgFile/:id", async (req, res) => {
 });
 
 router.delete("/image/:id", async (req, res) => {
+  console.log("i'm called!")
   try {
     const image = await Image.findById(req.params.id);
     await image.remove();

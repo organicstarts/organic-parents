@@ -1,6 +1,7 @@
 import {
   CREATE_THREAD,
   GET_THREADS,
+  GET_THREAD,
   SINGLE_THREAD,
   POST_REPLY,
   GET_REPLY,
@@ -19,6 +20,10 @@ const createNewThread = threadInfo => ({
 const getThreads = (token, page) => ({
   type: GET_THREADS,
   payload: { token, page }
+});
+const getThread = (threadId, token) => ({
+  type: GET_THREAD,
+  payload: { threadId, token }
 });
 
 const setSingleThread = data => ({
@@ -71,5 +76,6 @@ export {
   getRepliesCount,
   lockThread,
   getMyReplies,
-  voteThread
+  voteThread,
+  getThread
 };

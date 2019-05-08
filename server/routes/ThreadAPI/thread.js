@@ -40,9 +40,12 @@ router.get("/threads", async (req, res) => {
   const skip = req.query.skip ? parseInt(limit * req.query.skip) : 0;
 
   try {
-    const threads = await Thread.find({}).sort({ createdAt: -1 }).limit(limit).skip(skip);
-    if(!threads) {
-      res.status(401).send()
+    const threads = await Thread.find({})
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip);
+    if (!threads) {
+      res.status(401).send();
     }
     const threadObj = {
       threads: threads,
@@ -56,15 +59,14 @@ router.get("/threads", async (req, res) => {
 
 router.get("/thread/:id", auth, async (req, res) => {
   const _id = req.params.id;
-
   try {
-    const post = await post.findOne({ _id, owner: req.user._id });
+    const thread = await Thread.findOne({ _id });
 
-    if (!post) {
+    if (!thread) {
       return res.status(404).send();
     }
 
-    res.send(post);
+    res.send(thread);
   } catch (e) {
     res.status(500).send();
   }

@@ -11,45 +11,43 @@ import {
 } from "semantic-ui-react";
 import { createNewThread } from "../../stores/actions/post";
 import categories from "../../config-client/categories.json";
-import ReactQuill, { Quill } from "react-quill";
-import ImageResize from "quill-image-resize-module-react";
-import "react-quill/dist/quill.snow.css";
 import logo from "../../images/organic-parents-logo.png";
 import axios from "axios";
+import CustomTextEditor from "../common/CustomTextEditor";
 
-Quill.register("modules/imageResize", ImageResize);
 class ThreadForm extends Component {
   constructor() {
     super();
     this.state = {
-      subject: localStorage.getItem("subject") || "",
-      content: localStorage.getItem("content") || "",
-      category: localStorage.getItem("category") || "",
-      urlIds: JSON.parse(localStorage.getItem("urlIds")) || []
+      subject: "",
+      content: "",
+      category: "",
+      urlIds: JSON.parse(localStorage.getItem("urlIds")) || [],
+      isDirty: false
     };
     this.handleChange = this.handleChange.bind(this);
     this.createThread = this.createThread.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
     this.handleContentChange = this.handleContentChange.bind(this);
+    this.handleUrlId = this.handleUrlId.bind(this);
   }
 
   handleChange = e =>
-    this.setState({ [e.target.name]: e.target.value }, () => {
-      localStorage.setItem("subject", this.state.subject);
+    this.setState({
+      [e.target.name]: e.target.value,
+      isDirty: e.target.value ? true : false
     });
   handleContentChange(value) {
-    this.setState({ content: value }, () => {
-      localStorage.setItem("content", this.state.content);
-    });
+    this.setState({ content: value, isDirty: value ? true : false });
   }
-
-  handleSelectChange = (e, data) =>
-    this.setState({ [data.name]: data.value }, () => {
-      localStorage.setItem("category", this.state.category);
-    });
+  handleUrlId = value => {
+    this.setState({ urlIds: value });
+  };
+  handleSelectChange = (e, data) => this.setState({ [data.name]: data.value });
 
   createThread() {
     const { urlIds, subject, category, content } = this.state;
+    this.setState({ isDirty: false });
     urlIds.map(async id => {
       if (!content.includes(id)) {
         await axios.delete(`image/${id}`);
@@ -63,60 +61,11 @@ class ThreadForm extends Component {
     };
     this.props.createNewThread(threadInfo);
 
-    localStorage.removeItem("content");
-    localStorage.removeItem("subject");
-    localStorage.removeItem("category");
     localStorage.removeItem("urlIds");
-    
   }
 
-  imageHandler = () => {
-    const input = document.createElement("input");
-    input.setAttribute("type", "file");
-    input.click();
-
-    // Listen upload local image and save to server
-    input.onchange = () => {
-      const file = input.files[0];
-
-      // file type is only image.
-      if (/^image\//.test(file.type) && file.size < 1000000) {
-        this.saveToServer(file);
-      } else {
-        alert("File is too large");
-      }
-    };
-  };
-
-  saveToServer = async file => {
-    let formData = new FormData();
-    formData.append("imgFile", file);
-    await axios
-      .post("/image", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      })
-      .then(img => {
-        this.insertToEditor(img.data._id);
-      })
-      .catch(e => {
-        alert("FILE TOO LARGE");
-      });
-  };
-
-  insertToEditor = async url => {
-    let addImg = this.state.content;
-    let urlId = [...this.state.urlIds];
-    urlId.push(url);
-    addImg = addImg + `<Image src="http://192.168.0.9:3001/imgFile/${url}" />`;
-
-    this.setState({ content: addImg, urlIds: urlId }, () => {
-      localStorage.setItem("urlIds", JSON.stringify(this.state.urlIds));
-    });
-  };
-
   render() {
+    const { content, urlIds, isDirty } = this.state;
     return (
       <Grid columns={2}>
         <Grid.Row>
@@ -144,51 +93,12 @@ class ThreadForm extends Component {
                   autoFocus
                 />
 
-                <ReactQuill
-                  value={this.state.content}
-                  onChange={this.handleContentChange}
-                  theme="snow"
-                  modules={{
-                    toolbar: {
-                      container: [
-                        [{ header: [1, 2, false] }],
-                        ["bold", "italic", "underline", "strike", "blockquote"],
-                        [
-                          { list: "ordered" },
-                          { list: "bullet" },
-                          { indent: "-1" },
-                          { indent: "+1" }
-                        ],
-                        ["link", "image"],
-                        ["clean"]
-                      ],
-                      handlers: { image: this.imageHandler }
-                    },
-                    imageResize: {
-                      handleStyles: {
-                        backgroundColor: "black",
-                        border: "none",
-                        color: "white"
-                      },
-                      modules: ["Resize", "DisplaySize", "Toolbar"]
-                    }
-                  }}
-                  formats={[
-                    "header",
-                    "font",
-                    "size",
-                    "bold",
-                    "italic",
-                    "underline",
-                    "strike",
-                    "blockquote",
-                    "list",
-                    "bullet",
-                    "indent",
-                    "link",
-                    "image",
-                    "video"
-                  ]}
+                <CustomTextEditor
+                  isDirty={isDirty}
+                  content={content}
+                  urlIds={urlIds}
+                  handleContentChange={this.handleContentChange}
+                  handleUrlId={this.handleUrlId}
                 />
 
                 <Button type="submit" fluid size="large" color="teal">

@@ -10,12 +10,16 @@ import {
   Segment,
   Comment
 } from "semantic-ui-react";
-import { postReply, getReplies, voteThread } from "../../stores/actions/post";
+import {
+  postReply,
+  getReplies,
+  voteThread,
+  getThread
+} from "../../stores/actions/post";
 import { getUser } from "../../stores/actions/user";
-import defaultImg from "../../images/image.png";
+import CustomTextEditor from "../common/CustomTextEditor";
 import ReactHtmlParser from "react-html-parser";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import defaultImg from "../../images/image.png";
 import moment from "moment";
 import axios from "axios";
 
@@ -23,88 +27,47 @@ class ThreadDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      replyContent: localStorage.getItem("replyContent") || "",
-      replyUrlIds: localStorage.getItem("replyUrlIds") || []
+      content: "",
+      urlIds: localStorage.getItem("urlIds") || []
+
       // toggle: this.props.thread.replies.map(reply => false)
     };
     this.handleChange = this.handleChange.bind(this);
+    this.handleUrlId = this.handleUrlId.bind(this);
     this.submitReply = this.submitReply.bind(this);
   }
 
   handleChange(value) {
-    this.setState({ replyContent: value });
+    this.setState({ content: value, isDirty: value && !value.match("<p><br></p>") ? true : false });
   }
+  handleUrlId = value => {
+    this.setState({ urlIds: value });
+  };
   submitReply() {
-    const { replyContent, replyUrlIds } = this.state;
-    replyUrlIds.map(async id => {
-      if (!replyContent.includes(id)) {
+    const { content, urlIds } = this.state;
+    urlIds.map(async id => {
+      if (!content.includes(id)) {
         await axios.delete(`image/${id}`);
       }
     });
     const replyInfo = {
-      replyContent,
+      content,
       threadId: this.props.thread._id,
       token: this.props.token
     };
+    this.setState({ content: "", urlIds: [], isDirty: false });
     this.props.postReply(replyInfo);
-    localStorage.removeItem("replyContent");
-    localStorage.removeItem("replyUrlIds");
-    this.setState({ replyContent: "", replyUrlIds: [] });
+    localStorage.removeItem("urlIds");
   }
 
   componentDidMount() {
+    this.props.getThread(this.props.thread._id, this.props.token);
     const replyInfo = {
       token: this.props.token,
       threadId: this.props.thread._id
     };
     this.props.getReplies(replyInfo);
   }
-
-  imageHandler = () => {
-    const input = document.createElement("input");
-    input.setAttribute("type", "file");
-    input.click();
-
-    // Listen upload local image and save to server
-    input.onchange = () => {
-      const file = input.files[0];
-
-      // file type is only image.
-      if (/^image\//.test(file.type) && file.size < 1000000) {
-        this.saveToServer(file);
-      } else {
-        alert("File is too large");
-      }
-    };
-  };
-
-  saveToServer = async file => {
-    let formData = new FormData();
-    formData.append("imgFile", file);
-    await axios
-      .post("/image", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      })
-      .then(img => {
-        this.insertToEditor(img.data._id);
-      })
-      .catch(e => {
-        alert("FILE TOO LARGE");
-      });
-  };
-
-  insertToEditor = async url => {
-    let addImg = this.state.replyContent;
-    let urlId = [...this.state.urlIds];
-    urlId.push(url);
-    addImg = addImg + `<Image src="http://192.168.0.9:3001/imgFile/${url}" />`;
-
-    this.setState({ replyContent: addImg, urlIds: urlId }, () => {
-      localStorage.setItem("urlIds", JSON.stringify(this.state.urlIds));
-    });
-  };
 
   showReplies() {
     const { thread } = this.props;
@@ -151,6 +114,7 @@ class ThreadDetail extends Component {
 
   render() {
     const { thread } = this.props;
+    const { isDirty, content, urlIds } = this.state;
     return (
       <Segment>
         {thread.lock && (
@@ -271,55 +235,13 @@ class ThreadDetail extends Component {
             </Grid.Column>
           </Grid.Row>
         </Grid>
-        <ReactQuill
-          readOnly={this.props.thread.lock ? true : false}
-          value={this.state.replyContent}
-          onChange={this.handleChange}
-          theme="snow"
-          placeholder="What are your thoughts..."
-          modules={{
-            toolbar: {
-              container: [
-                [{ header: [1, 2, false] }],
-                ["bold", "italic", "underline", "strike", "blockquote"],
-                [
-                  { list: "ordered" },
-                  { list: "bullet" },
-                  { indent: "-1" },
-                  { indent: "+1" }
-                ],
-                ["link", "image"],
-                ["clean"]
-              ],
-              handlers: { image: this.imageHandler }
-            },
-            imageResize: {
-              handleStyles: {
-                backgroundColor: "black",
-                border: "none",
-                color: "white"
-              },
-              modules: ["Resize", "DisplaySize", "Toolbar"]
-            }
-          }}
-          formats={[
-            "header",
-            "font",
-            "size",
-            "bold",
-            "italic",
-            "underline",
-            "strike",
-            "blockquote",
-            "list",
-            "bullet",
-            "indent",
-            "link",
-            "image",
-            "video"
-          ]}
+        <CustomTextEditor
+          isDirty={isDirty}
+          content={content}
+          urlIds={urlIds}
+          handleContentChange={this.handleChange}
+          handleUrlId={this.handleUrlId}
         />
-
         <Button
           disabled={this.props.thread.lock ? true : false}
           type="submit"
@@ -354,5 +276,5 @@ function mapStateToProps({ authState, userState, postState }) {
 
 export default connect(
   mapStateToProps,
-  { postReply, getReplies, getUser, voteThread }
+  { postReply, getReplies, getUser, voteThread, getThread }
 )(ThreadDetail);

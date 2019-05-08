@@ -267,9 +267,9 @@ class Main extends Component {
   }
   render() {
     return (
-      <Grid>
+      <Grid centered>
         <Grid.Row columns={2}>
-          <Grid.Column computer={12} mobile={16}>
+          <Grid.Column computer={10} mobile={16}>
             {this.renderThreads()}
 
             <div style={{ textAlign: "center" }}>
@@ -292,7 +292,7 @@ class Main extends Component {
             </Segment>
             <h4>Categories</h4>
 
-            <div>{this.renderCategories()}</div>
+            <Segment>{this.renderCategories()}</Segment>
           </Grid.Column>
         </Grid.Row>
       </Grid>

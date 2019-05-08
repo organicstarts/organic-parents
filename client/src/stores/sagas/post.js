@@ -1,6 +1,7 @@
 import {
   CREATE_THREAD_LOADED,
   GET_THREADS_LOADED,
+  GET_THREAD_LOADED,
   POST_REPLY_LOADED,
   GET_REPLY_LOADED,
   DELETE_THREAD_LOADED,
@@ -25,6 +26,14 @@ function* handleGetThread(action) {
   try {
     const payload = yield call(getThreads, action);
     yield put({ type: GET_THREADS_LOADED, payload });
+  } catch (e) {
+    yield put({ type: "API_ERRORED", payload: e });
+  }
+}
+function* handleGetOneThread(action) {
+  try {
+    const payload = yield call(getThread, action);
+    yield put({ type: GET_THREAD_LOADED, payload });
   } catch (e) {
     yield put({ type: "API_ERRORED", payload: e });
   }
@@ -119,10 +128,10 @@ const createThread = async action => {
 };
 
 const postReply = async action => {
-  const { threadId, replyContent, token } = action.payload;
+  const { threadId, content, token } = action.payload;
   return await axios.post(
     "/reply",
-    { content: replyContent, thread: threadId },
+    { content, thread: threadId },
     {
       headers: {
         Authorization: token
@@ -165,6 +174,14 @@ const getThreads = async action => {
   });
 };
 
+const getThread = async action => {
+  const { threadId, token } = action.payload;
+  return await axios.get(`/thread/${threadId}`, {
+    headers: {
+      Authorization: token
+    }
+  });
+};
 const deleteThread = async action => {
   const { threadId, token } = action.payload;
   return await axios.delete(`/thread/${threadId}`, {
@@ -206,5 +223,6 @@ export {
   handleGetRepliesCount,
   handleLockThread,
   handleGetMyReplies,
-  handlevoteThread
+  handlevoteThread,
+  handleGetOneThread
 };

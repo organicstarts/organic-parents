@@ -6,6 +6,7 @@ import {
   UPLOAD_AVATAR,
   CREATE_THREAD,
   GET_THREADS,
+  GET_THREAD,
   POST_REPLY,
   GET_REPLY,
   DELETE_ACCOUNT,
@@ -37,6 +38,7 @@ import {
 import {
   handleCreateThread,
   handleGetThread,
+  handleGetOneThread,
   handlePostReply,
   handleGetReply,
   handleDeleteThread,
@@ -53,6 +55,7 @@ export default function* watcherSaga() {
   yield takeEvery(UPLOAD_AVATAR, handleUpload);
   yield takeEvery(CREATE_THREAD, handleCreateThread);
   yield takeEvery(GET_THREADS, handleGetThread);
+  yield takeEvery(GET_THREAD, handleGetOneThread);
   yield takeEvery(POST_REPLY, handlePostReply);
   yield takeEvery(GET_REPLY, handleGetReply);
   yield takeEvery(DELETE_ACCOUNT, handleDeleteUser);

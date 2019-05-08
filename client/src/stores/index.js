@@ -1,5 +1,9 @@
 import { createStore, applyMiddleware } from "redux";
-import { persistStore, persistReducer } from "redux-persist";
+import { persistStore, persistCombineReducers } from "redux-persist";
+import {
+  createFilter,
+  createBlacklistFilter
+} from "redux-persist-transform-filter";
 import storage from "redux-persist/lib/storage";
 import { createLogger } from "redux-logger";
 import createSagaMiddleware from "redux-saga";
@@ -9,13 +13,17 @@ import rootSaga from "./sagas";
 const logger = createLogger();
 const saga = createSagaMiddleware();
 
+const saveSubsetBlacklistFilter = createFilter("postState", [
+  "thread"
+],);
+
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: ["postState"]
+  transforms: [saveSubsetBlacklistFilter]
 };
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistedReducer = persistCombineReducers(persistConfig, rootReducer);
 
 export const store = createStore(
   persistedReducer,
