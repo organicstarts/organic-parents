@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { login, signUp } from "../../stores/actions/auth";
+import { login, signUp, facebookLogin } from "../../stores/actions/auth";
 import { Button, Form, Grid, Header, Segment } from "semantic-ui-react";
 
 class LoginSignUp extends Component {
@@ -98,6 +98,16 @@ class LoginSignUp extends Component {
               Log In
             </Button>
           </Form>
+          Or
+          <Button
+            icon="facebook"
+            color="facebook"
+            fluid
+            size="large"
+            onClick={() => this.props.facebookLogin()}
+          >
+            Login with Facebook
+          </Button>
         </Segment>
       );
     } else {
@@ -201,6 +211,6 @@ const mapStateToProps = ({ authState }) => {
 export default withRouter(
   connect(
     mapStateToProps,
-    { login, signUp }
+    { login, signUp, facebookLogin }
   )(LoginSignUp)
 );

@@ -3,6 +3,21 @@ const User = require("../../models/user");
 const multer = require("multer");
 const sharp = require("sharp");
 const auth = require("../../middleware/auth");
+const passport = require("passport");
+const FacebookStrategy = require("passport-facebook");
+
+passport.use(
+  new FacebookStrategy(
+    {
+      clientID: "652118181901206",
+      clientSecret: "9ad5d4153ada9ca4640e9c0bd7959725",
+      callbackURL: "http://localhost:3000/users/facebook/callback"
+    },
+    () => {
+      console.log("SUP");
+    }
+  )
+);
 
 /*-------------------------------------------------------------------
                             POST REQUEST                            
@@ -32,6 +47,17 @@ router.post("/users/login", async (req, res) => {
     res.status(400).send();
   }
 });
+
+router.get("/users/login/facebook", passport.authenticate("facebook"));
+
+router.get(
+  "/users/facebook/callback",
+  passport.authenticate("facebook", { failureRedirect: "/login" }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect("/");
+  }
+);
 
 router.post("/users/logout", auth, async (req, res) => {
   try {

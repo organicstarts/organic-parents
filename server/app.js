@@ -4,6 +4,8 @@ import path from "path";
 const app = express();
 require("./db/mongoose");
 const router = express.Router();
+const cors = require("cors")
+const passport = require("passport")
 const userRoutes = require("./routes/UserAPI/user");
 const replyRoutes = require("./routes/ReplyAPI/reply");
 const threadRoutes = require("./routes/ThreadAPI/thread");
@@ -12,8 +14,11 @@ const conversationRoutes = require("./routes/MessageApi/conversation");
 const messageRoutes = require("./routes/MessageApi/message");
 const staticFiles = express.static(path.join(__dirname, "../../client/build"));
 require("./config/seed");
+app.use(cors())
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: false }));
+app.use(passport.initialize());
+app.use(passport.session())
 app.use(staticFiles);
 app.use(router);
 app.use(userRoutes);

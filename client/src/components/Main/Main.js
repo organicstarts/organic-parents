@@ -269,7 +269,7 @@ class Main extends Component {
     return (
       <Grid centered>
         <Grid.Row columns={2}>
-          <Grid.Column computer={10} mobile={16}>
+          <Grid.Column computer={12} mobile={16}>
             {this.renderThreads()}
 
             <div style={{ textAlign: "center" }}>

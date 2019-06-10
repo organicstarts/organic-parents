@@ -21,9 +21,10 @@ import {
   GET_MY_REPLY,
   GET_BANNED_USERS,
   VOTE_THREAD,
-  GET_ALL_USERS
+  GET_ALL_USERS,
+  FACEBOOK_LOGIN
 } from "../constants";
-import { handleLogin, handleSignUp, handleLogout } from "./auth";
+import { handleLogin, handleSignUp, handleLogout, handleFacebookLogin } from "./auth";
 import {
   handleUpload,
   handleDeleteUser,
@@ -50,6 +51,7 @@ import {
 
 export default function* watcherSaga() {
   yield takeEvery(AUTH_LOGIN, handleLogin);
+  yield takeEvery(FACEBOOK_LOGIN, handleFacebookLogin);
   yield takeEvery(AUTH_SIGNUP, handleSignUp);
   yield takeEvery(AUTH_LOGOUT, handleLogout);
   yield takeEvery(UPLOAD_AVATAR, handleUpload);
