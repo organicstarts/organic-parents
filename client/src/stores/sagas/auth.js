@@ -21,7 +21,7 @@ function* handleFacebookLogin() {
   try {
     const payload = yield call(facebookLogin);
     yield put({ type: FACEBOOK_LOGIN_LOADED, payload });
-    document.location.href = "/";
+    // document.location.href = "/";
   } catch (e) {
     yield put({ type: "API_ERRORED", payload: e });
   }
@@ -56,7 +56,7 @@ const login = async payload => {
 };
 
 const facebookLogin = async () => {
-  return await axios.get("/users/login/facebook");
+  return axios.get("http://localhost:3001/users/login/facebook/");
 };
 
 const logout = async payload => {
